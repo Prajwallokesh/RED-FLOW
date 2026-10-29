@@ -1,0 +1,270 @@
+=== REDFLOW: BUILD THE COMPLETE APPLICATION ===
+Project identity
+
+Project name: RedFlow
+Subtitle: A Secure Blood Supply Ecosystem with Decentralized Donor Verification and Traceability
+Domain: Healthcare
+Context: Final-year/semester engineering project. Team of 4 with zero blockchain experience. Local-first demo; optional public testnet deployment is a stretch goal.
+Goal in one sentence: Build a role-based blood bank management web app that verifies donors safely, tracks blood units with QR codes, runs on a hybrid database + blockchain architecture, and demonstrates tamper-evident audit records.
+
+Tech stack (locked — do not substitute)
+Frontend: React 18 + Vite + React Router DOM + Axios + qrcode + ethers v6
+Backend: Node.js (LTS) + Express + jsonwebtoken + bcryptjs + mongoose + dotenv + ethers v6 + cors
+Database: MongoDB (local via mongodb://127.0.0.1:27017/redflow)
+Blockchain (dev): Ganache GUI at HTTP 127.0.0.1:7545, chainId 5777
+Smart contracts: Solidity 0.8.20 + Hardhat + @nomicfoundation/hardhat-toolbox
+Wallet: MetaMask configured against Ganache RPC
+Optional testnet: Polygon Amoy (only after local works)
+State, styling: React hooks only (no Redux, no Tailwind required — plain CSS / CSS modules is fine)
+Testing: Jest + Supertest for backend; manual UI walkthrough for frontend
+
+DESIGN SYSTEM & UI/UX SPECIFICATIONS (RedFlow Design Language - RDL)
+
+Design Philosophy: Professional, Trustworthy, High-Efficiency, Medical-Tech.
+Avoid: Rounded "bubbly" designs, bright neon colors, unnecessary animations, or cluttered layouts.
+Focus: High-contrast readability, clean whitespace (the 8px grid), consistent component behavior, and subtle depth.
+
+1. Color Palette (Strictly follow hex codes)
+Primary (Navy): 
+#172B4D (Headers, Sidebars, Primary Text)
+Secondary (Medical Teal): 
+#007C91 (Actions, Verified status, Trust indicators, Primary buttons)
+Accent (Emergency Crimson): 
+#D32F2F (Alerts, Critical status, Blood-related highlights, Danger buttons)
+Warning (Amber): 
+#FFA000 (Pending status, Expiry alerts, Ineligible warnings)
+Success (Safe Green): 
+#2E7D32 (Verified status, Testing safe, Completed tasks)
+Surface (Light): 
+#F8F9FA (Main background)
+Surface (White): 
+#FFFFFF (Cards, Modals, Inputs)
+Border/Divider: 
+#E0E0E0 (Subtle separation)
+Text (Primary): 
+#212529
+Text (Secondary/Muted): 
+#6C757D
+2. Typography
+Font Family: 'Inter', system-ui, -apple-system, sans-serif (Highly legible, professional).
+Hierarchy:
+H1 (Page Titles): 28px, Bold, Primary Navy.
+H2 (Section Titles): 20px, Semi-bold, Secondary Teal.
+Body Text: 14px or 16px, Regular, Primary Text.
+Labels/Small Text: 12px, Medium, Secondary/Muted Text.
+Data/Numbers: Monospaced font for IDs and Transaction Hashes to ensure clarity.
+3. The 8px Grid & Spacing
+All margins, padding, and gaps must be multiples of 8px (8, 16, 24, 32, 48, 64).
+Standard card padding: 24px.
+Standard page margin: 32px.
+Component gap: 16px.
+4. Component Specifications
+Cards: background: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);. No heavy shadows.
+Buttons:
+Primary: background: #007C91; color: #FFFFFF; border-radius: 4px; padding: 10px 20px; font-weight: 600;.
+Secondary (Outline): border: 1px solid #007C91; color: #007C91; background: transparent;.
+Danger: background: #D32F2F; color: #FFFFFF;.
+Hover states: Darken color by 10% or use a subtle scale-down effect.
+Inputs: border: 1px solid #E0E0E0; border-radius: 4px; padding: 12px; font-size: 14px;. Focus state: border-color: #007C91; box-shadow: 0 0 0 3px rgba(0, 124, 145, 0.1);.
+Status Pills (Badges): Rounded-full (border-radius: 100px). Use low-opacity background + high-opacity text (e.g., background: rgba(46, 125, 50, 0.1); color: #2E7D32;).
+Data Tables: Zero vertical borders. Use thin horizontal dividers (1px solid #F0F0F0). Header: background: #F8F9FA; text-transform: uppercase; font-size: 12px; color: #6C757D;.
+Modals: Fixed center, background: #FFFFFF; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);.
+5. Dashboard & Layout Logic
+Layout: Sidebar navigation (fixed, Navy) + Main Content Area (scrollable, Light background).
+Grid: 12-column grid.
+Dashboard Layout:
+Row 1: Metric Cards (4 columns on desktop, 1 on mobile). Small, high-impact, quick glance.
+Row 2: Primary Visualizations (2 columns: Chart, Recent Activity).
+Row 3: Detailed Data (Full width: Main Table).
+Responsiveness: Mobile view must switch sidebar to a bottom-tab bar or a clean hamburger menu. Card columns must stack.
+6. Feedback & Loading
+Skeletons: Use gray pulsing skeleton loaders for all async data fetching (tables, cards, profile). No "Loading..." text.
+Toasts: Use a clean, slide-in corner toast (Top-Right) for Success/Error/Warning notifications.
+Empty States: Use a professional illustration or a clean icon + "No data found" text in center of cards/tables.
+FOLDER STRUCTURE (USE EXACTLY)
+redflow/
+  backend/
+    src/
+      config/db.js
+      middleware/auth.js
+      middleware/role.js
+      models/User.js, Donors.js, BloodUnit.js, TraceEvent.js, EmergencyRequest.js, BlockchainTransaction.js
+      routes/auth.js, donors.js, bloodUnits.js, requests.js, donorSearch.js, verify.js, blockchain.js
+      services/hashService.js, blockchainService.js
+      app.js, server.js
+      seed.js
+    .env
+  blockchain/
+    contracts/RedFlow.sol
+    scripts/deploy.js
+    hardhat.config.js
+    .env
+  frontend/
+    src/
+      pages/Home.jsx, Login.jsx, Register.jsx, DonorDashboard.jsx, AdminDashboard.jsx, HospitalDashboard.jsx, Verify.jsx, DonorRegistration.jsx, DonorProfile.jsx, BloodUnitForm.jsx, RequestForm.jsx, Requests.jsx
+      components/Navbar.jsx, ProtectedRoute.jsx, QrBox.jsx, TraceTimeline.jsx, DonorTable.jsx, BloodUnitTable.jsx, Badge.jsx
+      context/AuthContext.jsx
+      lib/api.js, ethers.js, hash.js
+      App.jsx, main.jsx
+    .env
+
+NON-NEGOTIABLE ENGINEERING RULES
+1. Hybrid architecture — sensitive data stays in MongoDB; only proofs go on-chain.
+2. NEVER store donor names, phone numbers, emails, addresses, disease names, medical reports, passwords, or private keys on-chain. EVER.
+3. Generate deterministic hashes from a fixed field order. For donor: `chainId|donorId|bloodGroup|lastDonationDate`. For blood unit: `chainId|unitId|donorId|bloodGroup|collectionDate|expiryDate|testStatus|availabilityStatus`. Use `ethers.keccak256(ethers.toUtf8Bytes(input))`. Never change the field order mid-project.
+4. Compute verification hash identically on read and on write.
+5. Use environment variables for every secret (.env). Never hardcode.
+6. One source of truth — MongoDB for state, blockchain for proof. Do not copy state from chain back into DB on reads.
+7. Strict mode in every JS file.
+8. Consistent error envelope: { error: string, code: string }. Use 400 validation, 401 unauthenticated, 403 unauthorized, 404 missing, 409 state conflict, 500 unexpected.
+9. CORS allows http://localhost:5173 only.
+10. Output one milestone at a time. After each module: list changed files, new routes, and the exact curl or browser steps to manually verify.
+
+ENV FILES (CREATE .env.example AND LOAD)
+backend/.env: PORT=5000, MONGO_URI=mongodb://127.0.0.1:27017/redflow, JWT_SECRET=change_me, GANACHE_RPC=http://127.0.0.1:7545, CONTRACT_ADDRESS=, ADMIN_PRIVATE_KEY=
+blockchain/.env: PRIVATE_KEY=, GANACHE_RPC=http://127.0.0.1:7545
+frontend/.env: VITE_API=http://localhost:5000/api, VITE_CONTRACT_ADDRESS=, VITE_CHAIN_ID=5777
+
+USERS AND ROLES
+Three roles: donor, admin, hospital. Donor self-registers. Admin and hospital accounts are seeded or created only by an admin. JWT signed with JWT_SECRET, 24h expiry, payload {id, role}.
+
+BUILD ORDER (FOLLOW EXACTLY)
+1. Bootstrap (folder structure, package.json, .env.example, README, monorepo npm script with concurrently).
+2. Auth and roles.
+3. Smart contract (write, compile, deploy to Ganache, capture address).
+4. Donor module and admin verification.
+5. Smart donation interval checker (90-day rule).
+6. Blood unit management with state machine + trace events.
+7. QR code generation and public verify page.
+8. Blockchain service layer + wire addresses into both .env files.
+9. Pincode-based donor search.
+10. Emergency requests + issue flow.
+11. Donor recognition badges.
+12. Admin dashboard.
+13. Hospital dashboard.
+14. Tests and an E2E happy-path script.
+15. Seed script with realistic demo data.
+16. Documentation and DEMO_SCRIPT.md.
+
+MODULE-BY-MODULE REQUIREMENTS
+
+MODULE 0 — Bootstrap
+DO: monorepo with three workspaces, root package.json uses concurrently to start backend (nodemon src/server.js), frontend (vite), and notes Ganache must run separately. Add .env.example for each. Install pinned versions. Add README with setup, run, demo.
+DO NOT: create separate repos. Do not lock to other Solidity versions.
+ACCEPT: `npm run dev` from repo root starts backend on :5000 and frontend on :5173.
+
+MODULE 1 — Authentication and Roles
+DO: User model {name,email unique,passwordHash,role enum donor|admin|hospital,createdAt}. bcryptjs cost 10. JWT 24h. Routes: POST /api/auth/register (always donor), POST /api/auth/login returns token + role, GET /api/auth/me. Middleware auth.js injects req.user. Middleware role.js accepts allowed roles array, returns 403 on mismatch. Frontend AuthContext stores user+token in localStorage, Axios interceptor injects Authorization header.
+DO NOT: return passwordHash. Do not let self-registration pick role=admin or role=hospital.
+ACCEPT: register donor → login → /me works. Token persists across refresh.
+
+MODULE 2 — Donor Registration and Admin Verification
+DO: Donor model {userId ref User, donorId unique DNR001…, name, age, gender, bloodGroup, phone, email, address, city, pincode, lastDonationDate nullable, eligibilityStatus enum pending|verified|flagged, isVerified, isFlagged, flagReason, donationCount, createdAt, blockchainTxHash}. POST /api/donors/register (donor). GET /api/donors/pending (admin). GET /api/donors (admin, filters bloodGroup,pincode,isVerified,isFlagged). PUT /api/donors/:donorId/verify (admin) calls verifyDonor(donorId, donorHash) on contract, stores tx hash. PUT /api/donors/:donorId/flag body {flag:bool, reason} calls flagDonor with reason's keccak256 — reason text stays in MongoDB only.
+DO NOT: write flagReason text on-chain. Do not let donors edit isVerified/isFlagged.
+ACCEPT: pending donor gets verified; profile shows verified and non-empty blockchainTxHash.
+
+MODULE 3 — Smart Donation Interval Checker
+DO: 90-day minimum gap. eligible iff today - lastDonationDate >= 90 days OR lastDonationDate is null. POST /api/donors/check-eligibility body {donorId} returns {eligible, nextEligibleDate, daysSinceLastDonation, ruleDays:90}.
+DO NOT: read from chain for eligibility. Blood unit creation must call the same checker.
+ACCEPT: a donor with lastDonationDate 30 days ago cannot be assigned a new unit; API returns 409.
+
+MODULE 4 — Blood Unit Management
+DO: BloodUnit model {unitId unique BU001…, donorId ref Donor, bloodGroup, collectionDate, expiryDate, testStatus enum pending|safe|rejected, availabilityStatus enum collected|testing|available|requested|issued|expired|rejected, storageLocation, qrUrl, blockchainTxHash, createdAt, updatedAt}. POST /api/blood-units validates donor verified+eligible+notflagged; expiryDate = collectionDate + 35 days; status collected + testStatus pending; generate unitId; generate QR pointing to frontend /verify/<unitId>; call addBloodUnit(unitId, unitHash, 'collected'); return unit with QR dataURL. PUT /api/blood-units/:unitId/test-status {status:'safe'|'rejected'} — safe → availability available; rejected → both rejected; emits updateBloodUnitStatus. PUT /api/blood-units/:unitId/availability (admin) enforcing the state machine. GET /api/blood-units supports filters. Cron or GET /api/blood-units/refresh-expiry marks past-expiry units as expired and writes trace + on-chain update.
+ALLOWED STATE MACHINE: collected → testing → available → requested → issued → expired. Any state → rejected (terminal).
+DO NOT: skip the state machine. Reverse testStatus=rejected. Issue expired or rejected units.
+ACCEPT: every state change writes a trace and a tx hash; creating for an ineligible or flagged donor returns 409.
+
+MODULE 5 — QR Code Generation and Verification Page
+DO: qrcode package generates dataURL for /verify/<unitId>. /verify/:unitId is a public route (no auth). Displays unitId, bloodGroup, collectionDate, expiryDate, testStatus, availabilityStatus. Shows "Blockchain Verified" green or "Record mismatch — possible tampering" red plus last verified timestamp. Backend GET /api/verify/:unitId returns { dbHash, chainHash, match, chainStatus, dbStatus }.
+DO NOT: put verification logic on-chain. Do not display donor name, phone, address, or medical details.
+ACCEPT: manually editing one selected DB field flips match=false on next QR scan; revert flips back true.
+
+MODULE 6 — Smart Contract
+DO: contracts/RedFlow.sol (Solidity 0.8.20). Members:
+- mapping(string=>DonorRecord) donors
+- mapping(string=>BloodUnitRecord) bloodUnits
+- mapping(address=>bool) admins
+- events: DonorVerified, DonorFlagged, BloodUnitCreated, BloodUnitStatusUpdated
+- DonorRecord {bytes32 dataHash; bool verified; bool flagged; address verifiedBy; address flaggedBy; uint256 timestamp}
+- BloodUnitRecord {bytes32 dataHash; string status; address createdBy; address updatedBy; uint256 timestamp}
+- Functions: addAdmin(address) onlyDeployer, verifyDonor(string donorId, bytes32 donorHash) onlyAdmin, flagDonor(string donorId, bool flagStatus, bytes32 reasonHash) onlyAdmin, addBloodUnit(string unitId, bytes32 unitHash, string status) onlyAdmin, updateBloodUnitStatus(string unitId, string status, bytes32 updatedHash) onlyAdmin, getDonorHash(string) returns(bytes32), getBloodUnitHash(string) returns(bytes32,string).
+HARDHAT CONFIG: chainId 5777, url from .env. scripts/deploy.js deploys with first Ganache account as deployer and prints address.
+DO NOT: use selfdestruct, delegatecall, or assembly. Every require needs a clear message.
+ACCEPT: npx hardhat run scripts/deploy.js --network ganache prints the address; paste it into backend/.env and frontend/.env.
+
+MODULE 7 — Blockchain Service Layer and Integration
+DO: blockchainService.js with getContract(), verifyDonorOnChain, flagDonorOnChain, addBloodUnitOnChain, updateBloodUnitStatusOnChain, getOnChainBloodUnit. JSON-RPC provider reused; admin signer (private key from env) only on server. Wrap every on-chain call in try/catch with readable errors. Save every success to BlockchainTransaction {entityType, entityId, action, txHash, walletAddress, blockNumber, timestamp}. Update MongoDB blockchainTxHash on success.
+DO NOT: let frontend directly call write functions. Don't re-read state into DB from chain.
+ACCEPT: admin verifies donor from UI; response includes txHash; GET /api/donors/:donorId shows non-empty blockchainTxHash.
+
+MODULE 8 — Traceability Timeline
+DO: TraceEvent model {eventId, unitId, eventType enum created|testing|tested|available|requested|issued|expired|rejected|returned, description, updatedBy, timestamp, blockchainTxHash}. Every Module 4 state change writes a trace event. GET /api/blood-units/:unitId/timeline returns chronological events. Frontend shows a vertical stepper.
+DO NOT: skip trace events for terminal states.
+ACCEPT: issuing a unit creates an `issued` trace event with the same tx hash.
+
+MODULE 9 — Emergency Requests and Pincode Search
+DO: EmergencyRequest model {requestId, hospitalName, contactNumber, bloodGroup, unitsRequired int, pincode, urgency enum normal|urgent|critical, status enum open|matched|issued|rejected|closed, matchedDonors array, createdAt}. POST /api/requests (hospital) creates open. GET /api/requests (admin) lists open first. POST /api/requests/:requestId/match (admin) tries to allocate tested-safe units; if short, runs Module 10 search and stores matches; transitions to matched/issued. POST /api/requests/:requestId/issue (admin) transitions allocated units to issued via Module 4 state machine + trace.
+DO NOT: over-issue. Issue expired or rejected units.
+ACCEPT: hospital submits request; admin sees allocation; units transition to issued with trace events.
+
+MODULE 10 — Location-Based Donor Search
+DO: POST /api/donor-search body {bloodGroup, pincode} returns {donors:[…]} filtered verified && !flagged && eligible, sorted by eligibility, exact pincode match first then same first-3-digit prefix, cap 25. Each entry: donorId, name, bloodGroup, lastDonationDate, city. Phone only for hospital role. POST /api/donor-search/nearby accepts {pincode, radiusKm} using prefix heuristic.
+DO NOT: store coordinates. Return flagged donors.
+ACCEPT: search for O+ in 573202 returns verified eligible unflagged donors; nearby-pincode fallback works when no exact match.
+
+MODULE 11 — Donor Recognition (Badges)
+DO: Bronze (1), Silver (3), Gold (5), Platinum (10) donations. Compute on read from donationCount. <Badge level="gold"/> SVG component. Increment donationCount by 1 when a unit transitions to issued.
+DO NOT: award badges before issuing.
+ACCEPT: after 3rd issued unit, donor profile shows Silver.
+
+MODULE 12 — Admin Dashboard
+DO: GET /api/dashboard/admin returns totalDonors, verifiedDonors, pendingDonors, flaggedDonors, availableUnits (count + byGroup), expiredUnits, nearExpiry (within 7 days), openRequests, criticalRequests, recentDonations (last 10), recentTransactions (last 10 on-chain). Frontend: counters, donut by blood group, bar of emergency requests by urgency, recent activity table. Pure read endpoint, no caching.
+DO NOT: put aggregates on-chain.
+ACCEPT: counters update reactively after Module 2/4/9 changes.
+
+MODULE 13 — Hospital Dashboard
+DO: GET /api/dashboard/hospital (hospital role) returns this hospital's submitted requests with status chips.
+DO NOT: show other hospitals' requests.
+ACCEPT: hospital sees only its own requests.
+
+MODULE 14 — Tests and E2E Happy Path
+DO: backend smoke tests per route. test:flow script:
+  a) register donor → admin verify (capture tx hash)
+  b) create blood unit (verify DB fields + tx hash)
+  c) flip test to safe, availability to available
+  d) submit hospital request for matching group
+  e) issue request to that unit (verify unit status, trace, tx hashes)
+  f) GET /api/verify/<unitId> assert match=true
+Frontend reachability: every page reachable; protected routes redirect to /login; admin routes blocked for donors. Add tamper test: flip one DB field, assert match=false, then revert.
+DO NOT: ship a feature whose happy path lacks an automated test or curl.
+ACCEPT: test:flow prints expected tx hashes and 0 errors.
+
+MODULE 15 — Seed Script
+DO: backend/seed.js inserts:
+  - 1 admin (email admin@redflow.test, pwd Admin@123)
+  - 2 hospitals
+  - 10 donors across 4–5 pincodes and 6 blood groups (1 flagged)
+  - 5 blood units (3 available including one near expiry, 1 issued, 1 expired)
+  - 1 open emergency request
+Runs are idempotent.
+DO NOT: seed production data.
+ACCEPT: post-seed dashboard shows realistic counts without manual input.
+
+MODULE 16 — Documentation
+DO: README with setup, run, demo. DEMO_SCRIPT.md with click-by-click script and talking points. Viva one-liner: "RedFlow records tamper-evident blockchain proofs for donor verification and blood unit traceability while keeping private data secure in MongoDB."
+DO NOT: leave console.log debug noise in final build.
+ACCEPT: new dev clones, installs, runs, and demos in under 30 minutes.
+
+CROSS-CUTTING
+- Only admin wallet address stored on-chain — never the private key.
+- Any successful on-chain write saves to BlockchainTransaction collection.
+- All state-changing endpoints require auth AND role check.
+- Every saved entity that has a tx hash stores the latest tx hash in its own document.
+- Frontend /verify page must be mobile responsive — that's the page reviewers photograph.
+
+OUTPUT RULES
+- Stop after each module's ACCEPT and report: files changed, new routes, exact verification commands.
+- Always include the deploy command for the contract and the curl for routes.
+- When every module is done, output one shell block: `npm run dev` and the URL to open.
+
+START NOW. First step: create the repo skeleton and Module 0 bootstrap. After finishing Module 0, print the next command I should run locally to verify.

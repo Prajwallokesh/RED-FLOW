@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+*/node_modules/
+.pnp
+.pnp.js
+
+# Build Outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Hardhat & Blockchain Artifacts
+blockchain/artifacts/
+blockchain/cache/
+coverage/
+coverage.json
+typechain/
+typechain-types/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor & OS Metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+[Tt]emp/
+*.tmp
+*.bak
+*.swp
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace

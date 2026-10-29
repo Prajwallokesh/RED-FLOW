@@ -1,0 +1,20 @@
+{
+  "name": "redflow-blockchain",
+  "version": "1.0.0",
+  "description": "RedFlow Smart Contracts and Deployment Scripts",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network ganache",
+    "test": "hardhat test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.22.8"
+  },
+  "author": "RedFlow Team",
+  "license": "MIT"
+}

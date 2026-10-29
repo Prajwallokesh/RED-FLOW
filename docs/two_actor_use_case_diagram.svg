@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960" style="background:#FFFFFF; font-family:'Segoe UI', Arial, sans-serif;">
+  <!-- Canvas Background -->
+  <rect width="960" height="960" fill="#FFFFFF"/>
+
+  <!-- ==================== CONNECTOR LINES (LIGHT BLUE) ==================== -->
+  
+  <!-- Donor (Top Left) Connections: from (135, 230) -->
+  <line x1="135" y1="210" x2="345" y2="80" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="220" x2="345" y2="160" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="230" x2="345" y2="240" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="240" x2="345" y2="320" stroke="#5B9BD5" stroke-width="1.8"/>
+
+  <!-- Hospital (Bottom Left) Connections: from (135, 760) -->
+  <line x1="135" y1="740" x2="345" y2="640" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="750" x2="345" y2="720" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="760" x2="345" y2="800" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="135" y1="770" x2="345" y2="880" stroke="#5B9BD5" stroke-width="1.8"/>
+
+  <!-- Blood Bank Admin (Right) Connections: from (825, 470) -->
+  <line x1="825" y1="440" x2="615" y2="80" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="445" x2="615" y2="160" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="455" x2="615" y2="400" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="465" x2="615" y2="480" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="475" x2="615" y2="560" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="485" x2="615" y2="720" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="495" x2="615" y2="800" stroke="#5B9BD5" stroke-width="1.8"/>
+  <line x1="825" y1="505" x2="615" y2="880" stroke="#5B9BD5" stroke-width="1.8"/>
+
+  <!-- ==================== USE CASE OVALS (PEACH / ORANGE) ==================== -->
+  <!-- Center X = 480, Width radius = 135, Height radius = 26 -->
+
+  <!-- Oval 1: User Login -->
+  <ellipse cx="480" cy="80" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="85" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">User Login</text>
+
+  <!-- Oval 2: Register Donor Profile -->
+  <ellipse cx="480" cy="160" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="165" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Register Donor Profile</text>
+
+  <!-- Oval 3: 90-Day Cooldown Check -->
+  <ellipse cx="480" cy="240" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="245" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">90-Day Cooldown Check</text>
+
+  <!-- Oval 4: View Badges & History -->
+  <ellipse cx="480" cy="320" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="325" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">View Badges &amp; History</text>
+
+  <!-- Oval 5: Verify Donor Account -->
+  <ellipse cx="480" cy="400" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="405" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Verify Donor Account</text>
+
+  <!-- Oval 6: Blood Intake & QR Tagging -->
+  <ellipse cx="480" cy="480" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="485" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Blood Intake &amp; QR Tagging</text>
+
+  <!-- Oval 7: Lab Screening -->
+  <ellipse cx="480" cy="560" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="565" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Lab Screening (Safe/Reject)</text>
+
+  <!-- Oval 8: Search Donor by Pincode -->
+  <ellipse cx="480" cy="640" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="645" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Search Donor by Pincode</text>
+
+  <!-- Oval 9: Emergency Blood Request -->
+  <ellipse cx="480" cy="720" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="725" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Emergency Blood Request</text>
+
+  <!-- Oval 10: Match & Issue Units -->
+  <ellipse cx="480" cy="800" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="805" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Match &amp; Issue Units</text>
+
+  <!-- Oval 11: Verify QR Code -->
+  <ellipse cx="480" cy="880" rx="135" ry="26" fill="#F8A576" stroke="#E06D3B" stroke-width="2"/>
+  <text x="480" y="885" font-size="14" font-weight="500" fill="#000000" text-anchor="middle">Verify QR Code</text>
+
+  <!-- ==================== LEFT ACTOR 1: DONOR (STICK FIGURE) ==================== -->
+  <g transform="translate(65, 120)">
+    <!-- Head -->
+    <ellipse cx="45" cy="40" rx="20" ry="24" fill="none" stroke="#5B4696" stroke-width="3"/>
+    <!-- Body -->
+    <line x1="45" y1="64" x2="45" y2="135" stroke="#5B4696" stroke-width="3"/>
+    <!-- Arms -->
+    <line x1="10" y1="90" x2="80" y2="90" stroke="#5B4696" stroke-width="3"/>
+    <line x1="10" y1="90" x2="5" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <line x1="80" y1="90" x2="85" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <!-- Legs -->
+    <line x1="45" y1="135" x2="15" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <line x1="45" y1="135" x2="75" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <!-- Label -->
+    <text x="45" y="230" font-size="16" font-weight="700" fill="#172B4D" text-anchor="middle">Donor</text>
+  </g>
+
+  <!-- ==================== LEFT ACTOR 2: HOSPITAL (STICK FIGURE) ==================== -->
+  <g transform="translate(65, 650)">
+    <!-- Head -->
+    <ellipse cx="45" cy="40" rx="20" ry="24" fill="none" stroke="#5B4696" stroke-width="3"/>
+    <!-- Body -->
+    <line x1="45" y1="64" x2="45" y2="135" stroke="#5B4696" stroke-width="3"/>
+    <!-- Arms -->
+    <line x1="10" y1="90" x2="80" y2="90" stroke="#5B4696" stroke-width="3"/>
+    <line x1="10" y1="90" x2="5" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <line x1="80" y1="90" x2="85" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <!-- Legs -->
+    <line x1="45" y1="135" x2="15" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <line x1="45" y1="135" x2="75" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <!-- Label -->
+    <text x="45" y="230" font-size="16" font-weight="700" fill="#172B4D" text-anchor="middle">Hospital</text>
+  </g>
+
+  <!-- ==================== RIGHT ACTOR: BLOOD BANK ADMIN (STICK FIGURE) ==================== -->
+  <g transform="translate(810, 360)">
+    <!-- Head -->
+    <ellipse cx="45" cy="40" rx="20" ry="24" fill="none" stroke="#5B4696" stroke-width="3"/>
+    <!-- Body -->
+    <line x1="45" y1="64" x2="45" y2="135" stroke="#5B4696" stroke-width="3"/>
+    <!-- Arms -->
+    <line x1="10" y1="90" x2="80" y2="90" stroke="#5B4696" stroke-width="3"/>
+    <line x1="10" y1="90" x2="5" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <line x1="80" y1="90" x2="85" y2="105" stroke="#5B4696" stroke-width="2.5"/>
+    <!-- Legs -->
+    <line x1="45" y1="135" x2="15" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <line x1="45" y1="135" x2="75" y2="200" stroke="#5B4696" stroke-width="3"/>
+    <!-- Label -->
+    <text x="45" y="230" font-size="16" font-weight="700" fill="#172B4D" text-anchor="middle">Blood Bank Admin</text>
+  </g>
+</svg>

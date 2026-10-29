@@ -1,0 +1,36 @@
+{
+  "name": "redflow",
+  "version": "1.0.0",
+  "description": "RedFlow - A Secure Blood Supply Ecosystem with Decentralized Donor Verification and Traceability",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "blockchain",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "compile:contracts": "npm run compile --workspace=blockchain",
+    "deploy:contracts": "npm run deploy --workspace=blockchain",
+    "seed": "npm run seed --workspace=backend",
+    "test:backend": "npm run test --workspace=backend",
+    "test:flow": "npm run test:flow --workspace=backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "blood-bank",
+    "blockchain",
+    "ethereum",
+    "ganache",
+    "solidity",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "RedFlow Team",
+  "license": "MIT"
+}

@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" style="background:#FFFFFF; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Card Shadow Filter -->
+    <filter id="cardShadow" x="-4%" y="-4%" width="108%" height="112%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.08"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Gradients -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+    <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16A34A"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#B91C1C"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#16A34A"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#7C3AED"/>
+    </marker>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="750" fill="#F8FAFC"/>
+  <rect x="25" y="25" width="1150" height="700" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#cardShadow)"/>
+
+  <!-- Title Header -->
+  <g transform="translate(60, 55)">
+    <text x="0" y="22" font-size="24" font-weight="800" fill="#0F172A" letter-spacing="-0.5">REDFLOW: SYSTEM ARCHITECTURE</text>
+    <text x="0" y="44" font-size="13" font-weight="500" fill="#64748B">Simple 4-Tier Hybrid Architecture (Decoupled Off-Chain Storage &amp; Blockchain Proofs)</text>
+  </g>
+
+  <!-- ==================== TIER 1: CLIENT LAYER ==================== -->
+  <g transform="translate(60, 115)">
+    <!-- Main Card -->
+    <rect x="0" y="0" width="1080" height="110" rx="12" fill="#F8FAFC" stroke="#0284C7" stroke-width="2" filter="url(#cardShadow)"/>
+    
+    <!-- Header Pill -->
+    <rect x="20" y="-14" width="220" height="28" rx="14" fill="url(#blueGrad)"/>
+    <text x="130" y="5" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">1. PRESENTATION LAYER</text>
+
+    <!-- Portal 1: Donor Portal -->
+    <g transform="translate(30, 28)">
+      <rect x="0" y="0" width="310" height="60" rx="10" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="18" fill="#E0F2FE"/>
+      <text x="30" y="36" font-size="16" text-anchor="middle">👤</text>
+      <text x="60" y="27" font-size="14" font-weight="700" fill="#0F172A">Donor Portal</text>
+      <text x="60" y="46" font-size="11.5" fill="#64748B">Registration • Cooldown • Badges</text>
+    </g>
+
+    <!-- Portal 2: Hospital Dashboard -->
+    <g transform="translate(385, 28)">
+      <rect x="0" y="0" width="310" height="60" rx="10" fill="#FFFFFF" stroke="#BBF7D0" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="18" fill="#F0FDF4"/>
+      <text x="30" y="36" font-size="16" text-anchor="middle">🏥</text>
+      <text x="60" y="27" font-size="14" font-weight="700" fill="#0F172A">Hospital Dashboard</text>
+      <text x="60" y="46" font-size="11.5" fill="#64748B">Pincode Search • Emergency Orders</text>
+    </g>
+
+    <!-- Portal 3: Admin Console -->
+    <g transform="translate(740, 28)">
+      <rect x="0" y="0" width="310" height="60" rx="10" fill="#FFFFFF" stroke="#FED7AA" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="18" fill="#FFF7ED"/>
+      <text x="30" y="36" font-size="16" text-anchor="middle">🛡️</text>
+      <text x="60" y="27" font-size="14" font-weight="700" fill="#0F172A">Admin Console</text>
+      <text x="60" y="46" font-size="11.5" fill="#64748B">Verification • Lab Testing • Dispatch</text>
+    </g>
+  </g>
+
+  <!-- ==================== CONNECTOR ARROW 1 -> 2 ==================== -->
+  <path d="M 600 225 L 600 270" fill="none" stroke="#0284C7" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <rect x="475" y="238" width="250" height="22" rx="11" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="600" y="253" font-size="11" font-weight="700" fill="#0369A1" text-anchor="middle">HTTPS / REST API (JWT Bearer Auth)</text>
+
+  <!-- ==================== TIER 2: APPLICATION LAYER ==================== -->
+  <g transform="translate(60, 270)">
+    <!-- Main Card -->
+    <rect x="0" y="0" width="1080" height="110" rx="12" fill="#F8FAFC" stroke="#4F46E5" stroke-width="2" filter="url(#cardShadow)"/>
+    
+    <!-- Header Pill -->
+    <rect x="20" y="-14" width="240" height="28" rx="14" fill="url(#indigoGrad)"/>
+    <text x="140" y="5" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">2. APPLICATION LAYER</text>
+
+    <!-- 4 Clean Microservice Blocks Wrapped in Groups -->
+    <!-- Service 1: Auth Guard -->
+    <g transform="translate(25, 28)">
+      <rect x="0" y="0" width="240" height="60" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="26" font-size="13" font-weight="700" fill="#0F172A">🔐 Auth &amp; RBAC Guard</text>
+      <text x="14" y="46" font-size="11" fill="#64748B">JWT 24h • Bcrypt Salt 10</text>
+    </g>
+
+    <!-- Service 2: Cooldown Engine -->
+    <g transform="translate(290, 28)">
+      <rect x="0" y="0" width="240" height="60" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="26" font-size="13" font-weight="700" fill="#0F172A">⏱️ 90-Day Cooldown</text>
+      <text x="14" y="46" font-size="11" fill="#64748B">Donation Interval Safety Check</text>
+    </g>
+
+    <!-- Service 3: State Machine -->
+    <g transform="translate(555, 28)">
+      <rect x="0" y="0" width="240" height="60" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="26" font-size="13" font-weight="700" fill="#0F172A">🔄 Unit State Machine</text>
+      <text x="14" y="46" font-size="11" fill="#64748B">collected → testing → issued</text>
+    </g>
+
+    <!-- Service 4: Web3 Bridge -->
+    <g transform="translate(820, 28)">
+      <rect x="0" y="0" width="235" height="60" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="26" font-size="13" font-weight="700" fill="#0F172A">⛓️ Blockchain Bridge</text>
+      <text x="14" y="46" font-size="11" fill="#64748B">Keccak-256 Hashes • Ethers.js</text>
+    </g>
+  </g>
+
+  <!-- ==================== SPLIT ARROWS 2 -> 3 & 4 ==================== -->
+  <!-- Left Arrow to MongoDB -->
+  <path d="M 330 380 L 330 435" fill="none" stroke="#16A34A" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <rect x="210" y="395" width="240" height="20" rx="10" fill="#DCFCE7" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="330" y="409" font-size="10.5" font-weight="700" fill="#15803D" text-anchor="middle">Store Private Data (Mongoose TCP)</text>
+
+  <!-- Right Arrow to Blockchain -->
+  <path d="M 870 380 L 870 435" fill="none" stroke="#DC2626" stroke-width="2.5" marker-end="url(#arrowRed)"/>
+  <rect x="745" y="395" width="250" height="20" rx="10" fill="#FEE2E2" stroke="#FECACA" stroke-width="1"/>
+  <text x="870" y="409" font-size="10.5" font-weight="700" fill="#B91C1C" text-anchor="middle">Anchor Proofs Only (JSON-RPC)</text>
+
+  <!-- ==================== TIER 3 & 4 (HYBRID BOTTOM) ==================== -->
+
+  <!-- TIER 3: MONGODB (LEFT) -->
+  <g transform="translate(60, 440)">
+    <rect x="0" y="0" width="510" height="190" rx="12" fill="#F8FAFC" stroke="#16A34A" stroke-width="2" filter="url(#cardShadow)"/>
+    
+    <!-- Header Pill -->
+    <rect x="20" y="-14" width="260" height="28" rx="14" fill="url(#greenGrad)"/>
+    <text x="150" y="5" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">3. DATABASE LAYER (MONGODB)</text>
+
+    <!-- Subtitle -->
+    <text x="25" y="30" font-size="13" font-weight="700" fill="#166534">Off-Chain Private Data Storage</text>
+    <text x="25" y="48" font-size="11.5" fill="#64748B">High-speed BSON storage for clinical operations &amp; PII</text>
+
+    <!-- Content Cards (Clean 2-Wide-Card Layout) -->
+    <g transform="translate(25, 62)">
+      <!-- Card 1: PII -->
+      <rect x="0" y="0" width="460" height="50" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="22" font-size="12.5" font-weight="700" fill="#0F172A">🔒 Protected Donor PII &amp; Medical Flags</text>
+      <text x="14" y="39" font-size="11" fill="#64748B">Legal Name, Phone, Address, Pincode (Strictly Off-Chain)</text>
+
+      <!-- Card 2: Inventory -->
+      <g transform="translate(0, 58)">
+        <rect x="0" y="0" width="460" height="50" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+        <text x="14" y="22" font-size="12.5" font-weight="700" fill="#0F172A">🩸 Blood Inventory, QR Codes &amp; Trace Events</text>
+        <text x="14" y="39" font-size="11" fill="#64748B">35-Day Expiry, Emergency Requests, Lifecycle Timeline</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- TIER 4: BLOCKCHAIN (RIGHT) -->
+  <g transform="translate(630, 440)">
+    <rect x="0" y="0" width="510" height="190" rx="12" fill="#F8FAFC" stroke="#DC2626" stroke-width="2" filter="url(#cardShadow)"/>
+    
+    <!-- Header Pill -->
+    <rect x="20" y="-14" width="270" height="28" rx="14" fill="url(#redGrad)"/>
+    <text x="155" y="5" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">4. BLOCKCHAIN LAYER (ETHEREUM)</text>
+
+    <!-- Subtitle -->
+    <text x="25" y="30" font-size="13" font-weight="700" fill="#991B1B">On-Chain Trust &amp; Verification</text>
+    <text x="25" y="48" font-size="11.5" fill="#64748B">Smart Contract: RedFlow.sol (Solidity 0.8.20 @ Ganache)</text>
+
+    <!-- Content Cards (Clean 2-Wide-Card Layout) -->
+    <g transform="translate(25, 62)">
+      <!-- Card 1: State Mappings -->
+      <rect x="0" y="0" width="460" height="50" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2"/>
+      <text x="14" y="22" font-size="12.5" font-weight="700" fill="#0F172A">📜 Smart Contract State Mappings</text>
+      <text x="14" y="39" font-size="11" fill="#64748B">donors[id] =&gt; bytes32 dataHash • bloodUnits[id] =&gt; bytes32 dataHash</text>
+
+      <!-- Card 2: Anti-Tamper Loop -->
+      <g transform="translate(0, 58)">
+        <rect x="0" y="0" width="460" height="50" rx="8" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.2"/>
+        <text x="14" y="22" font-size="12.5" font-weight="700" fill="#15803D">🛡️ Anti-Tamper Cross-Check (dbHash == chainHash)</text>
+        <text x="14" y="39" font-size="11" fill="#0369A1">Zero-Gas Public Verification • Instant Mismatch Detection</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== HORIZONTAL AUDIT LOOP ARROW ==================== -->
+  <path d="M 570 535 L 630 535" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowPurple)"/>
+  <rect x="560" y="550" width="80" height="20" rx="10" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
+  <text x="600" y="564" font-size="9.5" font-weight="800" fill="#6D28D9" text-anchor="middle">AUDIT</text>
+
+  <!-- ==================== BOTTOM MINIMAL BAR ==================== -->
+  <g transform="translate(60, 650)">
+    <rect x="0" y="0" width="1080" height="50" rx="8" fill="#172B4D"/>
+    
+    <text x="40" y="30" font-size="12.5" font-weight="700" fill="#FFFFFF">✔ 100% Privacy Preserving</text>
+    <text x="215" y="30" font-size="12" fill="#94A3B8">(Zero PII on Blockchain)</text>
+
+    <text x="420" y="30" font-size="12.5" font-weight="700" fill="#FFFFFF">⚡ Zero-Gas Verification</text>
+    <text x="585" y="30" font-size="12" fill="#94A3B8">(Instant camera QR scan)</text>
+
+    <text x="790" y="30" font-size="12.5" font-weight="700" fill="#FFFFFF">🛡️ Tamper-Evident</text>
+    <text x="925" y="30" font-size="12" fill="#94A3B8">(Ethereum consensus)</text>
+  </g>
+</svg>

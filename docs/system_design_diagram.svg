@@ -1,0 +1,366 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" width="1600" height="920" style="background:#F8FAFC; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Card Shadow Filters -->
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="110%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.06"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Arrowhead Markers (Matching the 4 Legend Colors Exactly) -->
+    <!-- 1. Data Flow Arrow (Vibrant Blue) -->
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#2563EB"/>
+    </marker>
+    <marker id="arrowBlueStart" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M 7 1 L 0 4 L 7 7 z" fill="#2563EB"/>
+    </marker>
+
+    <!-- 2. Request / Response Arrow (Medical Teal) -->
+    <marker id="arrowTeal" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#0097A7"/>
+    </marker>
+    <marker id="arrowTealStart" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M 7 1 L 0 4 L 7 7 z" fill="#0097A7"/>
+    </marker>
+
+    <!-- 3. Verification Arrow (Fresh Green) -->
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#16A34A"/>
+    </marker>
+    <marker id="arrowGreenStart" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M 7 1 L 0 4 L 7 7 z" fill="#16A34A"/>
+    </marker>
+
+    <!-- 4. Trust / Blockchain Arrow (Deep Maroon / Crimson) -->
+    <marker id="arrowMaroon" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#991B1B"/>
+    </marker>
+    <marker id="arrowMaroonStart" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+      <path d="M 7 1 L 0 4 L 7 7 z" fill="#991B1B"/>
+    </marker>
+  </defs>
+
+  <!-- Outer Canvas Container -->
+  <rect width="1600" height="920" fill="#F8FAFC"/>
+  <rect x="20" y="15" width="1560" height="890" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+
+  <!-- ==================== 1. CLIENT LAYER ==================== -->
+  <!-- Layer Label Left -->
+  <text x="50" y="125" font-size="22" font-weight="800" fill="#0F172A">1. Client Layer</text>
+
+  <!-- Layer Container Box -->
+  <rect x="240" y="35" width="1300" height="175" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2"/>
+
+  <!-- Portal 1: Donor Portal (Web/Mobile) -->
+  <g transform="translate(265, 50)">
+    <rect x="0" y="0" width="280" height="142" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#shadow)"/>
+    <!-- Mock Browser Header -->
+    <rect x="0" y="0" width="280" height="26" rx="10" fill="#F1F5F9"/>
+    <circle cx="15" cy="13" r="4" fill="#EF4444"/>
+    <circle cx="27" cy="13" r="4" fill="#F59E0B"/>
+    <circle cx="39" cy="13" r="4" fill="#10B981"/>
+    <!-- Mock UI Elements -->
+    <rect x="15" y="40" width="130" height="12" rx="3" fill="#E2E8F0"/>
+    <rect x="15" y="60" width="100" height="8" rx="2" fill="#CBD5E1"/>
+    <rect x="15" y="75" width="110" height="22" rx="4" fill="#007C91"/>
+    <text x="70" y="90" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">Check Cooldown</text>
+    <!-- Blood Drop Illustration Badge -->
+    <rect x="175" y="38" width="85" height="65" rx="6" fill="#FEF2F2" stroke="#FEE2E2"/>
+    <path d="M 217 48 C 217 48 202 65 202 73 C 202 81 208 87 217 87 C 226 87 232 81 232 73 C 232 65 217 48 217 48 Z" fill="#D32F2F"/>
+    <text x="140" y="128" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Donor Portal (Web/Mobile)</text>
+  </g>
+
+  <!-- Portal 2: Hospital Dashboard -->
+  <g transform="translate(585, 50)">
+    <rect x="0" y="0" width="280" height="142" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#shadow)"/>
+    <!-- Mock Browser Header -->
+    <rect x="0" y="0" width="280" height="26" rx="10" fill="#F1F5F9"/>
+    <circle cx="15" cy="13" r="4" fill="#EF4444"/>
+    <circle cx="27" cy="13" r="4" fill="#F59E0B"/>
+    <circle cx="39" cy="13" r="4" fill="#10B981"/>
+    <text x="140" y="18" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">Hospital Dashboard</text>
+    <!-- Mock Stats Grid -->
+    <rect x="15" y="38" width="75" height="32" rx="4" fill="#F0FDF4" stroke="#DCFCE7"/>
+    <text x="52" y="58" font-size="11" font-weight="700" fill="#15803D" text-anchor="middle">12 Units</text>
+    <rect x="100" y="38" width="75" height="32" rx="4" fill="#E0F2FE" stroke="#BAE6FD"/>
+    <text x="137" y="58" font-size="11" font-weight="700" fill="#0369A1" text-anchor="middle">O+ Stock</text>
+    <rect x="185" y="38" width="80" height="32" rx="4" fill="#FEF2F2" stroke="#FEE2E2"/>
+    <text x="225" y="58" font-size="11" font-weight="700" fill="#B91C1C" text-anchor="middle">2 Urgent</text>
+    <!-- Mock Chart Bar -->
+    <rect x="15" y="80" width="250" height="20" rx="3" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <rect x="15" y="80" width="170" height="20" rx="3" fill="#007C91"/>
+    <text x="100" y="94" font-size="9.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Stock Matched: 68%</text>
+    <text x="140" y="128" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Hospital Dashboard</text>
+  </g>
+
+  <!-- Portal 3: Admin Console -->
+  <g transform="translate(905, 50)">
+    <rect x="0" y="0" width="280" height="142" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#shadow)"/>
+    <!-- Mock Browser Header -->
+    <rect x="0" y="0" width="280" height="26" rx="10" fill="#F1F5F9"/>
+    <circle cx="15" cy="13" r="4" fill="#EF4444"/>
+    <circle cx="27" cy="13" r="4" fill="#F59E0B"/>
+    <circle cx="39" cy="13" r="4" fill="#10B981"/>
+    <text x="140" y="18" font-size="10" font-weight="700" fill="#475569" text-anchor="middle">Admin Console</text>
+    <!-- Mock Controls -->
+    <rect x="15" y="38" width="115" height="24" rx="4" fill="#FEF3C7" stroke="#FDE68A"/>
+    <text x="72" y="54" font-size="10" font-weight="700" fill="#B45309" text-anchor="middle">Pending Donors</text>
+    <rect x="145" y="38" width="120" height="24" rx="4" fill="#F1F5F9"/>
+    <text x="205" y="54" font-size="10" font-weight="700" fill="#334155" text-anchor="middle">Unit Intake</text>
+    <rect x="15" y="72" width="250" height="28" rx="4" fill="#F8FAFC" stroke="#E2E8F0"/>
+    <circle cx="30" cy="86" r="6" fill="#16A34A"/>
+    <text x="145" y="90" font-size="10" fill="#475569" text-anchor="middle">Lab Screening Status: Safe</text>
+    <text x="140" y="128" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">Admin Console</text>
+  </g>
+
+  <!-- Portal 4: QR Scanner -->
+  <g transform="translate(1225, 50)">
+    <rect x="0" y="0" width="280" height="142" rx="10" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#shadow)"/>
+    <!-- QR Finder Pattern Visual -->
+    <g transform="translate(100, 15)">
+      <rect x="0" y="0" width="80" height="80" rx="8" fill="#F0FDFA" stroke="#007C91" stroke-width="2"/>
+      <!-- QR Pattern Elements -->
+      <rect x="10" y="10" width="22" height="22" fill="#0F172A"/>
+      <rect x="14" y="14" width="14" height="14" fill="#F0FDFA"/>
+      <rect x="17" y="17" width="8" height="8" fill="#0F172A"/>
+
+      <rect x="48" y="10" width="22" height="22" fill="#0F172A"/>
+      <rect x="52" y="14" width="14" height="14" fill="#F0FDFA"/>
+      <rect x="55" y="17" width="8" height="8" fill="#0F172A"/>
+
+      <rect x="10" y="48" width="22" height="22" fill="#0F172A"/>
+      <rect x="14" y="52" width="14" height="14" fill="#F0FDFA"/>
+      <rect x="17" y="55" width="8" height="8" fill="#0F172A"/>
+
+      <rect x="42" y="42" width="10" height="10" fill="#0F172A"/>
+      <rect x="58" y="42" width="12" height="10" fill="#0F172A"/>
+      <rect x="42" y="58" width="28" height="12" fill="#007C91"/>
+    </g>
+    <text x="140" y="128" font-size="14" font-weight="700" fill="#0F172A" text-anchor="middle">QR Scanner</text>
+  </g>
+
+  <!-- ==================== TEAL ARROWS (1. CLIENT -> API GATEWAY) ==================== -->
+  <!-- Requests Arrow from Donor Portal -->
+  <path d="M 405 192 L 405 240 L 805 240 L 805 310" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+  <rect x="430" y="228" width="70" height="20" rx="4" fill="#E0F7FA"/>
+  <text x="465" y="242" font-size="11" font-weight="700" fill="#00838F" text-anchor="middle">Requests</text>
+
+  <!-- Data Submission Arrow from Hospital Dashboard -->
+  <path d="M 725 192 L 725 255 L 845 255 L 845 310" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+  <rect x="735" y="238" width="95" height="20" rx="4" fill="#E0F7FA"/>
+  <text x="782" y="252" font-size="11" font-weight="700" fill="#00838F" text-anchor="middle">Data Submission</text>
+
+  <!-- Admin Actions Arrow from Admin Console -->
+  <path d="M 1045 192 L 1045 255 L 935 255 L 935 310" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Scans Arrow from QR Scanner -->
+  <path d="M 1365 192 L 1365 240 L 975 240 L 975 310" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+  <rect x="1335" y="228" width="55" height="20" rx="4" fill="#E0F7FA"/>
+  <text x="1362" y="242" font-size="11" font-weight="700" fill="#00838F" text-anchor="middle">Scans</text>
+
+
+  <!-- ==================== 2. API GATEWAY & MICROSERVICES LAYER ==================== -->
+  <!-- Layer Label Left -->
+  <text x="50" y="380" font-size="22" font-weight="800" fill="#0F172A">2. API Gateway</text>
+  <text x="50" y="405" font-size="22" font-weight="800" fill="#0F172A">&amp; Microservices</text>
+
+  <!-- Layer Container Box -->
+  <rect x="240" y="295" width="1300" height="235" rx="12" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2"/>
+
+  <!-- Central API Gateway Box -->
+  <g transform="translate(735, 310)">
+    <rect x="0" y="0" width="290" height="46" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="145" y="28" font-size="17" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">API Gateway</text>
+  </g>
+
+  <!-- Microservice 1: Express REST API -->
+  <g transform="translate(265, 420)">
+    <rect x="0" y="0" width="220" height="85" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1.2" filter="url(#shadow)"/>
+    <text x="110" y="40" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Express</text>
+    <text x="110" y="60" font-size="13" font-weight="600" fill="#38BDF8" text-anchor="middle">REST API</text>
+  </g>
+
+  <!-- Microservice 2: Auth Guard (JWT, Roles) -->
+  <g transform="translate(515, 420)">
+    <rect x="0" y="0" width="220" height="85" rx="8" fill="#007C91" stroke="#005B69" stroke-width="1.2" filter="url(#shadow)"/>
+    <text x="110" y="38" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Auth Guard</text>
+    <text x="110" y="58" font-size="12.5" font-weight="500" fill="#E0F7FA" text-anchor="middle">(JWT, Roles)</text>
+  </g>
+
+  <!-- Microservice 3: Cooldown Engine (Eligibility Check) -->
+  <g transform="translate(765, 420)">
+    <rect x="0" y="0" width="240" height="85" rx="8" fill="#16A34A" stroke="#15803D" stroke-width="1.2" filter="url(#shadow)"/>
+    <text x="120" y="38" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Cooldown Engine</text>
+    <text x="120" y="58" font-size="12.5" font-weight="500" fill="#DCFCE7" text-anchor="middle">(Eligibility Check)</text>
+  </g>
+
+  <!-- Microservice 4: Keccak-256 Hash Service -->
+  <g transform="translate(1035, 420)">
+    <rect x="0" y="0" width="220" height="85" rx="8" fill="#0D9488" stroke="#0F766E" stroke-width="1.2" filter="url(#shadow)"/>
+    <text x="110" y="38" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Keccak-256</text>
+    <text x="110" y="58" font-size="13" font-weight="500" fill="#CCFBF1" text-anchor="middle">Hash Service</text>
+  </g>
+
+  <!-- Microservice 5: Blockchain Service (Integration Layer) -->
+  <g transform="translate(1285, 420)">
+    <rect x="0" y="0" width="235" height="85" rx="8" fill="#991B1B" stroke="#7F1D1D" stroke-width="1.2" filter="url(#shadow)"/>
+    <text x="117" y="38" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Blockchain Service</text>
+    <text x="117" y="58" font-size="12.5" font-weight="500" fill="#FEE2E2" text-anchor="middle">(Integration Layer)</text>
+  </g>
+
+  <!-- ==================== INTERNAL ARROWS IN LAYER 2 ==================== -->
+  <!-- API Gateway to Express REST API (Teal) -->
+  <path d="M 760 356 L 760 380 L 375 380 L 375 420" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- API Gateway to Auth Guard (Teal) -->
+  <path d="M 820 356 L 820 388 L 625 388 L 625 420" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- API Gateway to Cooldown Engine (Teal) -->
+  <path d="M 880 356 L 880 420" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- API Gateway to Keccak-256 Hash Service (Teal) -->
+  <path d="M 940 356 L 940 388 L 1145 388 L 1145 420" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- API Gateway to Blockchain Service (Teal) -->
+  <path d="M 1000 356 L 1000 380 L 1400 380 L 1400 420" fill="none" stroke="#0097A7" stroke-width="2.5" marker-end="url(#arrowTeal)"/>
+
+  <!-- Inter-service connections (Data Flow - Blue) -->
+  <!-- Express REST API <-> Auth Guard (Blue Double Arrow) -->
+  <path d="M 485 462 L 515 462" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrowBlue)" marker-start="url(#arrowBlueStart)"/>
+
+  <!-- Auth Guard <-> Cooldown Engine (Blue Double Arrow) -->
+  <path d="M 735 462 L 765 462" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrowBlue)" marker-start="url(#arrowBlueStart)"/>
+
+  <!-- Cooldown Engine <-> Keccak-256 Hash Service (Blue Double Arrow) -->
+  <path d="M 1005 462 L 1035 462" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrowBlue)" marker-start="url(#arrowBlueStart)"/>
+
+  <!-- Keccak-256 Hash Service <-> Blockchain Service (Blue Double Arrow) -->
+  <path d="M 1255 462 L 1285 462" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrowBlue)" marker-start="url(#arrowBlueStart)"/>
+
+
+  <!-- ==================== 3. DATABASE LAYER (MONGODB) ==================== -->
+  <!-- Layer Label Left -->
+  <text x="50" y="665" font-size="22" font-weight="800" fill="#0F172A">3. Database</text>
+  <text x="50" y="692" font-size="22" font-weight="800" fill="#0F172A">Layer</text>
+
+  <!-- MongoDB Layer Container Box (Green Accent) -->
+  <g transform="translate(240, 595)">
+    <rect x="0" y="0" width="560" height="175" rx="12" fill="#F0FDF4" stroke="#86EFAC" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="280" y="32" font-size="16.5" font-weight="700" fill="#166534" text-anchor="middle">MongoDB NoSQL Collections</text>
+
+    <!-- 4 Chips Inside MongoDB -->
+    <g transform="translate(20, 55)">
+      <!-- Users Chip -->
+      <rect x="0" y="0" width="115" height="95" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1"/>
+      <text x="57" y="52" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Users</text>
+
+      <!-- Donors Chip -->
+      <rect x="135" y="0" width="115" height="95" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1"/>
+      <text x="192" y="52" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Donors</text>
+
+      <!-- Blood Units Chip -->
+      <rect x="270" y="0" width="115" height="95" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1"/>
+      <text x="327" y="44" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Blood</text>
+      <text x="327" y="64" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Units</text>
+
+      <!-- Audit Logs Chip -->
+      <rect x="405" y="0" width="115" height="95" rx="8" fill="#172B4D" stroke="#0F172A" stroke-width="1"/>
+      <text x="462" y="44" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Audit</text>
+      <text x="462" y="64" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Logs</text>
+    </g>
+  </g>
+
+
+  <!-- ==================== 4. BLOCKCHAIN TRUST LAYER ==================== -->
+  <!-- Blockchain Layer Container Box (Red Accent) -->
+  <g transform="translate(850, 595)">
+    <rect x="0" y="0" width="690" height="175" rx="12" fill="#FEF2F2" stroke="#FCA5A5" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="345" y="32" font-size="16.5" font-weight="700" fill="#991B1B" text-anchor="middle">4. Blockchain Trust Layer</text>
+
+    <!-- Outer Dashed Enclosure -->
+    <rect x="20" y="45" width="650" height="112" rx="8" fill="none" stroke="#F87171" stroke-width="1.2" stroke-dasharray="4,4"/>
+
+    <!-- 3 Crimson Chips Inside -->
+    <g transform="translate(35, 55)">
+      <!-- Chip 1: Ethereum Smart Contract -->
+      <rect x="0" y="0" width="190" height="92" rx="8" fill="#991B1B" stroke="#7F1D1D" stroke-width="1"/>
+      <text x="95" y="44" font-size="14.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Ethereum</text>
+      <text x="95" y="64" font-size="14" font-weight="600" fill="#FECACA" text-anchor="middle">Smart Contract</text>
+
+      <!-- Chip 2: Immutable Hashes -->
+      <rect x="215" y="0" width="190" height="92" rx="8" fill="#991B1B" stroke="#7F1D1D" stroke-width="1"/>
+      <text x="310" y="44" font-size="14.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Immutable</text>
+      <text x="310" y="64" font-size="14" font-weight="600" fill="#FECACA" text-anchor="middle">Hashes</text>
+
+      <!-- Chip 3: EVM Ledger -->
+      <rect x="430" y="0" width="190" height="92" rx="8" fill="#991B1B" stroke="#7F1D1D" stroke-width="1"/>
+      <text x="525" y="44" font-size="14.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">EVM</text>
+      <text x="525" y="64" font-size="14" font-weight="600" fill="#FECACA" text-anchor="middle">Ledger</text>
+    </g>
+  </g>
+
+
+  <!-- ==================== CROSS-LAYER ARROWS (COLORED BY LEGEND) ==================== -->
+
+  <!-- 1. BLUE ARROW: Data Flow (Express API <-> MongoDB) -->
+  <path d="M 375 505 L 375 595" fill="none" stroke="#2563EB" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <rect x="382" y="538" width="110" height="22" rx="4" fill="#EFF6FF"/>
+  <text x="437" y="553" font-size="11.5" font-weight="700" fill="#1D4ED8" text-anchor="middle">Read/Write Data</text>
+
+  <!-- 2. MAROON ARROW: Trust/Blockchain (Blockchain Service -> Blockchain Trust Layer) -->
+  <path d="M 1400 505 L 1400 595" fill="none" stroke="#991B1B" stroke-width="2.5" marker-end="url(#arrowMaroon)"/>
+  <rect x="1265" y="538" width="130" height="22" rx="4" fill="#FEF2F2"/>
+  <text x="1330" y="553" font-size="11" font-weight="700" fill="#991B1B" text-anchor="middle">Hashed Record Sync</text>
+
+  <!-- 3. GREEN ARROWS: Verification -->
+  <!-- Verification 1: Data Integrity Check (MongoDB -> Cooldown Engine) -->
+  <path d="M 720 595 L 720 545 L 850 545 L 850 505" fill="none" stroke="#16A34A" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <!-- Circular Verification Icon Node -->
+  <circle cx="785" cy="545" r="13" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="785" y="549" font-size="12" font-weight="800" fill="#15803D" text-anchor="middle">↺</text>
+  <rect x="805" y="535" width="115" height="20" rx="4" fill="#DCFCE7"/>
+  <text x="862" y="549" font-size="10.5" font-weight="700" fill="#15803D" text-anchor="middle">Data Integrity Check</text>
+
+  <!-- Verification 2: Anti-Tamper Verification Loop (Between MongoDB and Blockchain) -->
+  <path d="M 800 682 L 850 682" fill="none" stroke="#16A34A" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <!-- Circular Verification Icon Node -->
+  <circle cx="825" cy="682" r="11" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="825" y="686" font-size="11" font-weight="800" fill="#15803D" text-anchor="middle">✓</text>
+
+  <!-- Verification 3: Immutable Verification Loop (Blockchain Trust Layer -> Blockchain Service) -->
+  <path d="M 1540 670 L 1575 670 L 1575 462 L 1520 462" fill="none" stroke="#16A34A" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <!-- Circular Verification Icon Node -->
+  <circle cx="1575" cy="565" r="14" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+  <text x="1575" y="569" font-size="13" font-weight="800" fill="#15803D" text-anchor="middle">↺</text>
+  <text x="1545" y="535" font-size="11" font-weight="700" fill="#15803D" text-anchor="end">Immutable</text>
+  <text x="1545" y="550" font-size="11" font-weight="700" fill="#15803D" text-anchor="end">Verification</text>
+
+
+  <!-- ==================== 5. BOTTOM COLOR-CODED LEGEND ==================== -->
+  <g transform="translate(380, 830)">
+    <!-- Legend Item 1: Data Flow (Blue) -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="2" width="22" height="14" rx="3" fill="#2563EB"/>
+      <text x="32" y="15" font-size="14" font-weight="700" fill="#1E293B">Data Flow</text>
+    </g>
+
+    <!-- Legend Item 2: Request / Response (Teal) -->
+    <g transform="translate(180, 0)">
+      <rect x="0" y="2" width="22" height="14" rx="3" fill="#0097A7"/>
+      <text x="32" y="15" font-size="14" font-weight="700" fill="#1E293B">Request/Response</text>
+    </g>
+
+    <!-- Legend Item 3: Verification (Green) -->
+    <g transform="translate(420, 0)">
+      <rect x="0" y="2" width="22" height="14" rx="3" fill="#16A34A"/>
+      <text x="32" y="15" font-size="14" font-weight="700" fill="#1E293B">Verification</text>
+    </g>
+
+    <!-- Legend Item 4: Trust / Blockchain (Maroon) -->
+    <g transform="translate(610, 0)">
+      <rect x="0" y="2" width="22" height="14" rx="3" fill="#991B1B"/>
+      <text x="32" y="15" font-size="14" font-weight="700" fill="#1E293B">Trust/Blockchain</text>
+    </g>
+  </g>
+
+</svg>

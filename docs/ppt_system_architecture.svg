@@ -1,0 +1,324 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" style="background:#F8FAFC; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;">
+  <defs>
+    <!-- Card Shadow Filter -->
+    <filter id="shadow" x="-3%" y="-3%" width="106%" height="110%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.07"/>
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+
+    <!-- Gradients -->
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#172B4D"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="badgeRed" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D32F2F"/>
+      <stop offset="100%" stop-color="#B71C1C"/>
+    </linearGradient>
+    <linearGradient id="badgeTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#007C91"/>
+      <stop offset="100%" stop-color="#005B69"/>
+    </linearGradient>
+    <linearGradient id="badgeIndigo" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+    <linearGradient id="badgeGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#16A34A"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+
+    <!-- Arrow Markers -->
+    <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#16A34A"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#D32F2F"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#7C3AED"/>
+    </marker>
+  </defs>
+
+  <!-- Slide Canvas Outer -->
+  <rect width="1600" height="900" fill="#F8FAFC"/>
+  <rect x="20" y="20" width="1560" height="860" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="2" filter="url(#shadow)"/>
+
+  <!-- ==================== PPT SLIDE HEADER ==================== -->
+  <g transform="translate(60, 45)">
+    <!-- Brand Icon -->
+    <rect x="0" y="0" width="52" height="52" rx="12" fill="url(#badgeRed)" filter="url(#shadow)"/>
+    <path d="M 26 12 C 26 12 16 25 16 31 C 16 37 20 41 26 41 C 32 41 36 37 36 31 C 36 25 26 12 26 12 Z" fill="#FFFFFF"/>
+    
+    <!-- Title & Subtitle -->
+    <text x="68" y="26" font-size="26" font-weight="800" fill="#0F172A" letter-spacing="-0.5">REDFLOW: SYSTEM ARCHITECTURE</text>
+    <text x="68" y="48" font-size="14" font-weight="600" fill="#64748B">A Hybrid Web3 Architecture for Decentralized Blood Supply Chain and Verification</text>
+
+    <!-- Presentation Badges -->
+    <g transform="translate(1120, 8)">
+      <rect x="0" y="0" width="160" height="34" rx="17" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1.2"/>
+      <text x="80" y="22" font-size="12.5" font-weight="700" fill="#0369A1" text-anchor="middle">4-TIER HYBRID</text>
+
+      <rect x="175" y="0" width="185" height="34" rx="17" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.2"/>
+      <text x="267" y="22" font-size="12.5" font-weight="700" fill="#15803D" text-anchor="middle">ZERO-PII ON CHAIN</text>
+    </g>
+  </g>
+
+  <!-- ==================== TIER 1: CLIENT & PRESENTATION LAYER ==================== -->
+  <g transform="translate(60, 115)">
+    <!-- Container -->
+    <rect x="0" y="0" width="1480" height="125" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    
+    <!-- Badge -->
+    <rect x="25" y="-14" width="260" height="28" rx="6" fill="url(#badgeTeal)"/>
+    <text x="38" y="5" font-size="12.5" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">1. PRESENTATION LAYER (REACT 18)</text>
+
+    <!-- 3 Simple Horizontal Portals -->
+    <!-- Donor Portal -->
+    <g transform="translate(25, 24)">
+      <rect x="0" y="0" width="450" height="85" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <circle cx="36" cy="42" r="22" fill="#E0F2FE"/>
+      <text x="36" y="49" font-size="20" text-anchor="middle">👤</text>
+      <text x="72" y="34" font-size="16" font-weight="700" fill="#0F172A">Donor Portal</text>
+      <text x="72" y="52" font-size="12.5" font-weight="600" fill="#0284C7">Donor Self-Service Interface</text>
+      <text x="72" y="70" font-size="12" fill="#64748B">Registration • 90-Day Cooldown • Badges</text>
+    </g>
+
+    <!-- Hospital Dashboard -->
+    <g transform="translate(515, 24)">
+      <rect x="0" y="0" width="450" height="85" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <circle cx="36" cy="42" r="22" fill="#F0FDF4"/>
+      <text x="36" y="49" font-size="20" text-anchor="middle">🏥</text>
+      <text x="72" y="34" font-size="16" font-weight="700" fill="#0F172A">Hospital Dashboard</text>
+      <text x="72" y="52" font-size="12.5" font-weight="600" fill="#16A34A">Clinical Order Management</text>
+      <text x="72" y="70" font-size="12" fill="#64748B">Pincode Search • Emergency Requests • QR Verify</text>
+    </g>
+
+    <!-- Admin Console -->
+    <g transform="translate(1005, 24)">
+      <rect x="0" y="0" width="450" height="85" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <circle cx="36" cy="42" r="22" fill="#FEF3C7"/>
+      <text x="36" y="49" font-size="20" text-anchor="middle">🛡️</text>
+      <text x="72" y="34" font-size="16" font-weight="700" fill="#0F172A">Admin Control Center</text>
+      <text x="72" y="52" font-size="12.5" font-weight="600" fill="#D97706">Blood Bank Operations</text>
+      <text x="72" y="70" font-size="12" fill="#64748B">On-Chain Verification • Unit Intake • Allocation</text>
+    </g>
+  </g>
+
+  <!-- ==================== ARROW: 1 -> 2 ==================== -->
+  <path d="M 800 240 L 800 268" fill="none" stroke="#0284C7" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+  <rect x="670" y="244" width="260" height="22" rx="11" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="800" y="259" font-size="11.5" font-weight="700" fill="#0369A1" text-anchor="middle">HTTPS / REST API (JWT Bearer Token)</text>
+
+  <!-- ==================== TIER 2: APPLICATION & SERVICES LAYER ==================== -->
+  <g transform="translate(60, 270)">
+    <!-- Container -->
+    <rect x="0" y="0" width="1480" height="150" rx="12" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.5"/>
+    
+    <!-- Badge -->
+    <rect x="25" y="-14" width="310" height="28" rx="6" fill="url(#badgeIndigo)"/>
+    <text x="38" y="5" font-size="12.5" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">2. APPLICATION LAYER (EXPRESS API)</text>
+
+    <!-- 5 Clean Functional Pills / Cards -->
+    <!-- Service 1: Auth Guard -->
+    <g transform="translate(25, 24)">
+      <rect x="0" y="0" width="265" height="105" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <text x="16" y="28" font-size="14.5" font-weight="700" fill="#0F172A">🔐 Auth &amp; Role Guard</text>
+      <text x="16" y="50" font-size="12" fill="#64748B">• Bcrypt password hashing</text>
+      <text x="16" y="68" font-size="12" fill="#64748B">• 24h JWT signed session</text>
+      <text x="16" y="86" font-size="12" fill="#0284C7">• Roles: Donor, Hospital, Admin</text>
+    </g>
+
+    <!-- Service 2: Cooldown Engine -->
+    <g transform="translate(315, 24)">
+      <rect x="0" y="0" width="265" height="105" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <text x="16" y="28" font-size="14.5" font-weight="700" fill="#0F172A">⏱️ 90-Day Cooldown</text>
+      <text x="16" y="50" font-size="12" fill="#64748B">• Mathematical interval check</text>
+      <text x="16" y="68" font-size="12" fill="#64748B">• Blocks premature donation</text>
+      <text x="16" y="86" font-size="12" fill="#16A34A">• Ensures safe donation cycle</text>
+    </g>
+
+    <!-- Service 3: Unit State Machine -->
+    <g transform="translate(605, 24)">
+      <rect x="0" y="0" width="270" height="105" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <text x="16" y="28" font-size="14.5" font-weight="700" fill="#0F172A">🔄 Unit State Machine</text>
+      <text x="16" y="50" font-size="12" fill="#64748B">• collected → testing → available</text>
+      <text x="16" y="68" font-size="12" fill="#64748B">• requested → issued</text>
+      <text x="16" y="86" font-size="12" fill="#DC2626">• Auto 35-day shelf-life expiry</text>
+    </g>
+
+    <!-- Service 4: Hash Pipeline -->
+    <g transform="translate(900, 24)">
+      <rect x="0" y="0" width="265" height="105" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <text x="16" y="28" font-size="14.5" font-weight="700" fill="#0F172A">#️⃣ Keccak-256 Hasher</text>
+      <text x="16" y="50" font-size="12" fill="#64748B">• Deterministic data hashing</text>
+      <text x="16" y="68" font-size="12" fill="#64748B">• Identical on write &amp; read</text>
+      <text x="16" y="86" font-size="12" fill="#4F46E5">• Dual-hash anti-tamper check</text>
+    </g>
+
+    <!-- Service 5: Blockchain Service -->
+    <g transform="translate(1190, 24)">
+      <rect x="0" y="0" width="265" height="105" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.2" filter="url(#shadow)"/>
+      <text x="16" y="28" font-size="14.5" font-weight="700" fill="#0F172A">⛓️ Web3 Gateway</text>
+      <text x="16" y="50" font-size="12" fill="#64748B">• Ethers.js v6 JSON-RPC</text>
+      <text x="16" y="68" font-size="12" fill="#64748B">• Admin key server-side signer</text>
+      <text x="16" y="86" font-size="12" fill="#D97706">• Zero gas fees for end users</text>
+    </g>
+  </g>
+
+  <!-- ==================== ARROWS: 2 -> 3 & 4 (SPLIT ARCHITECTURE) ==================== -->
+  <!-- Left Arrow to MongoDB -->
+  <path d="M 420 420 L 420 460" fill="none" stroke="#16A34A" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+  <rect x="270" y="428" width="300" height="22" rx="11" fill="#DCFCE7" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="420" y="443" font-size="11" font-weight="700" fill="#15803D" text-anchor="middle">Mongoose TCP / Private Clinical Records</text>
+
+  <!-- Right Arrow to Blockchain -->
+  <path d="M 1180 420 L 1180 460" fill="none" stroke="#D32F2F" stroke-width="2.5" marker-end="url(#arrowRed)"/>
+  <rect x="1025" y="428" width="310" height="22" rx="11" fill="#FEE2E2" stroke="#FECACA" stroke-width="1"/>
+  <text x="1180" y="443" font-size="11" font-weight="700" fill="#B91C1C" text-anchor="middle">JSON-RPC / Immutable Proof Hashes Only</text>
+
+  <!-- ==================== TIER 3 & 4: HYBRID PERSISTENCE & TRUST ==================== -->
+  
+  <!-- TIER 3: MONGODB (OFF-CHAIN) -->
+  <g transform="translate(60, 465)">
+    <rect x="0" y="0" width="715" height="295" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Badge -->
+    <rect x="25" y="-14" width="310" height="28" rx="6" fill="url(#badgeGreen)"/>
+    <text x="38" y="5" font-size="12.5" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">3. OFF-CHAIN PERSISTENCE (MONGODB)</text>
+
+    <!-- Subtitle Banner -->
+    <text x="25" y="32" font-size="13" font-weight="700" fill="#15803D">High-Speed NoSQL Storage (mongodb://127.0.0.1:27017)</text>
+
+    <!-- 4 Clean Content Cards -->
+    <g transform="translate(25, 45)">
+      <!-- Card A: Protected Donor PII -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="315" height="105" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="24" font-size="13.5" font-weight="700" fill="#0F172A">🔒 Protected Donor PII</text>
+        <text x="14" y="44" font-size="11.5" fill="#475569">• Full Legal Name, Phone, Email</text>
+        <text x="14" y="62" font-size="11.5" fill="#475569">• Residential Address, 6-Digit Pincode</text>
+        <text x="14" y="80" font-size="11.5" fill="#475569">• Medical Deferral Flags &amp; Notes</text>
+        <text x="14" y="96" font-size="11" font-weight="700" fill="#15803D">GDPR / HIPAA Compliant: Never on chain</text>
+      </g>
+
+      <!-- Card B: Blood Inventory -->
+      <g transform="translate(350, 0)">
+        <rect x="0" y="0" width="315" height="105" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="24" font-size="13.5" font-weight="700" fill="#0F172A">🩸 Blood Inventory &amp; QR</text>
+        <text x="14" y="44" font-size="11.5" fill="#475569">• Unit ID (BU001...), Blood Group</text>
+        <text x="14" y="62" font-size="11.5" fill="#475569">• Collection &amp; 35-Day Expiry Date</text>
+        <text x="14" y="80" font-size="11.5" fill="#475569">• Storage Shelf Location &amp; QR URL</text>
+        <text x="14" y="96" font-size="11" font-weight="700" fill="#0284C7">Linked with blockchainTxHash</text>
+      </g>
+
+      <!-- Card C: Trace Events Log -->
+      <g transform="translate(0, 120)">
+        <rect x="0" y="0" width="315" height="105" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="24" font-size="13.5" font-weight="700" fill="#0F172A">📜 Traceability Event Log</text>
+        <text x="14" y="44" font-size="11.5" fill="#475569">• Chronological lifecycle history</text>
+        <text x="14" y="62" font-size="11.5" fill="#475569">• Event types: created, tested, issued</text>
+        <text x="14" y="80" font-size="11.5" fill="#475569">• Actor ID, Timestamp &amp; Tx Receipt</text>
+        <text x="14" y="96" font-size="11" font-weight="700" fill="#4F46E5">Powers the UI Vertical Stepper</text>
+      </g>
+
+      <!-- Card D: Hospital Requests -->
+      <g transform="translate(350, 120)">
+        <rect x="0" y="0" width="315" height="105" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="24" font-size="13.5" font-weight="700" fill="#0F172A">🚨 Emergency Requests</text>
+        <text x="14" y="44" font-size="11.5" fill="#475569">• Hospital Emergency Orders</text>
+        <text x="14" y="62" font-size="11.5" fill="#475569">• Urgency: normal, urgent, critical</text>
+        <text x="14" y="80" font-size="11.5" fill="#475569">• Allocation &amp; Dispatch Tracking</text>
+        <text x="14" y="96" font-size="11" font-weight="700" fill="#D97706">Status: open → matched → issued</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- TIER 4: BLOCKCHAIN (ON-CHAIN) -->
+  <g transform="translate(825, 465)">
+    <rect x="0" y="0" width="715" height="295" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Badge -->
+    <rect x="25" y="-14" width="340" height="28" rx="6" fill="url(#badgeRed)"/>
+    <text x="38" y="5" font-size="12.5" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">4. BLOCKCHAIN TRUST LAYER (ETHEREUM)</text>
+
+    <!-- Subtitle Banner -->
+    <text x="25" y="32" font-size="13" font-weight="700" fill="#B91C1C">Smart Contract: RedFlow.sol (Solidity 0.8.20 @ Ganache Chain ID 5777)</text>
+
+    <!-- 2 Main Cards -->
+    <g transform="translate(25, 45)">
+      <!-- Card 1: On-Chain State Mappings -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="315" height="225" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="26" font-size="14" font-weight="700" fill="#0F172A">📜 Immutable State Mappings</text>
+        
+        <text x="14" y="52" font-size="12" font-family="monospace" font-weight="700" fill="#1E293B">mapping(string =&gt; DonorRecord)</text>
+        <text x="24" y="70" font-size="11.5" fill="#64748B">• bytes32 dataHash</text>
+        <text x="24" y="88" font-size="11.5" fill="#64748B">• bool verified, bool flagged</text>
+        <text x="24" y="106" font-size="11.5" fill="#64748B">• address verifiedBy, uint timestamp</text>
+
+        <text x="14" y="136" font-size="12" font-family="monospace" font-weight="700" fill="#1E293B">mapping(string =&gt; BloodUnitRecord)</text>
+        <text x="24" y="154" font-size="11.5" fill="#64748B">• bytes32 dataHash</text>
+        <text x="24" y="172" font-size="11.5" fill="#64748B">• string status (available, issued...)</text>
+        <text x="24" y="190" font-size="11.5" fill="#64748B">• address updatedBy, uint timestamp</text>
+        <text x="14" y="214" font-size="11" font-weight="700" fill="#DC2626">Tamper-Proof Ledger State</text>
+      </g>
+
+      <!-- Card 2: Cryptographic Verification -->
+      <g transform="translate(350, 0)">
+        <rect x="0" y="0" width="315" height="225" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+        <text x="14" y="26" font-size="14" font-weight="700" fill="#0F172A">🛡️ Cryptographic Verification</text>
+        
+        <text x="14" y="52" font-size="12" font-weight="600" fill="#475569">Emitted EVM Audit Events:</text>
+        <text x="20" y="72" font-size="10.5" font-family="monospace" fill="#007C91">• event DonorVerified</text>
+        <text x="20" y="90" font-size="10.5" font-family="monospace" fill="#007C91">• event BloodUnitStatusUpdated</text>
+
+        <text x="14" y="122" font-size="12" font-weight="600" fill="#475569">Anti-Tamper Cross-Check:</text>
+        <rect x="14" y="132" width="285" height="30" rx="6" fill="#DCFCE7" stroke="#BBF7D0" stroke-width="1"/>
+        <text x="156" y="152" font-size="11" font-family="monospace" font-weight="700" fill="#15803D" text-anchor="middle">dbHash == chainHash → VERIFIED ✓</text>
+
+        <rect x="14" y="168" width="285" height="30" rx="6" fill="#FEE2E2" stroke="#FECACA" stroke-width="1"/>
+        <text x="156" y="188" font-size="11" font-family="monospace" font-weight="700" fill="#B91C1C" text-anchor="middle">dbHash != chainHash → TAMPERED ✗</text>
+
+        <text x="14" y="214" font-size="11" font-weight="700" fill="#4338CA">Zero-Gas Public Verification Calls</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== HORIZONTAL AUDIT CONNECTOR ==================== -->
+  <path d="M 775 610 L 825 610" fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-dasharray="4,4" marker-end="url(#arrowPurple)"/>
+  <rect x="755" y="625" width="90" height="20" rx="10" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
+  <text x="800" y="639" font-size="10" font-weight="800" fill="#6D28D9" text-anchor="middle">AUDIT LOOP</text>
+
+  <!-- ==================== SLIDE FOOTER BAR ==================== -->
+  <g transform="translate(60, 785)">
+    <rect x="0" y="0" width="1480" height="68" rx="10" fill="#172B4D" stroke="#334155" stroke-width="1"/>
+    
+    <!-- Takeaway 1 -->
+    <g transform="translate(40, 22)">
+      <circle cx="14" cy="12" r="12" fill="#16A34A"/>
+      <text x="14" y="17" font-size="13" fill="#FFFFFF" text-anchor="middle">✓</text>
+      <text x="36" y="10" font-size="13.5" font-weight="700" fill="#FFFFFF">Privacy Preserving</text>
+      <text x="36" y="26" font-size="11.5" fill="#94A3B8">Sensitive donor PII stays strictly in MongoDB</text>
+    </g>
+
+    <!-- Takeaway 2 -->
+    <g transform="translate(540, 22)">
+      <circle cx="14" cy="12" r="12" fill="#0284C7"/>
+      <text x="14" y="17" font-size="13" fill="#FFFFFF" text-anchor="middle">⚡</text>
+      <text x="36" y="10" font-size="13.5" font-weight="700" fill="#FFFFFF">Zero-Gas Public Auditing</text>
+      <text x="36" y="26" font-size="11.5" fill="#94A3B8">Public can verify blood bags with zero gas fees</text>
+    </g>
+
+    <!-- Takeaway 3 -->
+    <g transform="translate(1040, 22)">
+      <circle cx="14" cy="12" r="12" fill="#D32F2F"/>
+      <text x="14" y="17" font-size="13" fill="#FFFFFF" text-anchor="middle">🛡</text>
+      <text x="36" y="10" font-size="13.5" font-weight="700" fill="#FFFFFF">Tamper-Evident Integrity</text>
+      <text x="36" y="26" font-size="11.5" fill="#94A3B8">Keccak-256 digests anchored on Ethereum EVM</text>
+    </g>
+  </g>
+</svg>

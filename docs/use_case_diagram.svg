@@ -1,0 +1,243 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 920" width="1400" height="920" style="background:#FFFFFF; font-family:'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="objectBoundingBox">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0F172A" flood-opacity="0.06"/>
+    </filter>
+    <!-- Arrowhead Marker for <<include>> -->
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#007C91"/>
+    </marker>
+    <marker id="arrowDashed" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M 0 1 L 7 4 L 0 7 z" fill="#64748B"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1400" height="920" fill="#F8FAFC"/>
+  <rect x="20" y="20" width="1360" height="880" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5" filter="url(#shadow)"/>
+
+  <!-- Title Header -->
+  <g transform="translate(60, 50)">
+    <text x="0" y="26" font-size="24" font-weight="800" fill="#172B4D" letter-spacing="-0.5">REDFLOW: COMPLETE UML USE CASE DIAGRAM</text>
+    <text x="0" y="48" font-size="13" font-weight="500" fill="#64748B">Functional Use Cases &amp; Role Boundaries across Donors, Hospitals, Administrators, and Blockchain Ledger</text>
+  </g>
+
+  <!-- System Boundary Box -->
+  <rect x="330" y="115" width="740" height="755" rx="14" fill="#FAFCFD" stroke="#007C91" stroke-width="2" stroke-dasharray="6,4"/>
+  <rect x="350" y="100" width="310" height="28" rx="6" fill="#007C91"/>
+  <text x="365" y="119" font-size="13" font-weight="700" fill="#FFFFFF" letter-spacing="0.5">SYSTEM BOUNDARY: REDFLOW</text>
+
+  <!-- ==================== LEFT ACTORS ==================== -->
+  <!-- ACTOR 1: DONOR -->
+  <g transform="translate(100, 260)">
+    <!-- Stick Figure -->
+    <circle cx="60" cy="30" r="16" fill="#FFFFFF" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="46" x2="60" y2="90" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="30" y1="62" x2="90" y2="62" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="35" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="85" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <!-- Label -->
+    <rect x="0" y="145" width="120" height="28" rx="14" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+    <text x="60" y="163" font-size="13" font-weight="700" fill="#0369A1" text-anchor="middle">Donor</text>
+    <text x="60" y="185" font-size="11" fill="#64748B" text-anchor="middle">Blood Donor</text>
+  </g>
+
+  <!-- ACTOR 2: HOSPITAL STAFF -->
+  <g transform="translate(100, 610)">
+    <!-- Stick Figure -->
+    <circle cx="60" cy="30" r="16" fill="#FFFFFF" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="46" x2="60" y2="90" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="30" y1="62" x2="90" y2="62" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="35" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="85" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <!-- Label -->
+    <rect x="-10" y="145" width="140" height="28" rx="14" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="60" y="163" font-size="13" font-weight="700" fill="#15803D" text-anchor="middle">Hospital Staff</text>
+    <text x="60" y="185" font-size="11" fill="#64748B" text-anchor="middle">Doctor / Clinician</text>
+  </g>
+
+  <!-- ==================== RIGHT ACTORS ==================== -->
+  <!-- ACTOR 3: BLOOD BANK ADMIN -->
+  <g transform="translate(1180, 260)">
+    <!-- Stick Figure -->
+    <circle cx="60" cy="30" r="16" fill="#FFFFFF" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="46" x2="60" y2="90" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="30" y1="62" x2="90" y2="62" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="35" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <line x1="60" y1="90" x2="85" y2="135" stroke="#172B4D" stroke-width="2.5"/>
+    <!-- Label -->
+    <rect x="-15" y="145" width="150" height="28" rx="14" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+    <text x="60" y="163" font-size="13" font-weight="700" fill="#B45309" text-anchor="middle">Blood Bank Admin</text>
+    <text x="60" y="185" font-size="11" fill="#64748B" text-anchor="middle">System Administrator</text>
+  </g>
+
+  <!-- ACTOR 4: ETHEREUM BLOCKCHAIN (SYSTEM ACTOR) -->
+  <g transform="translate(1180, 610)">
+    <!-- Node Box -->
+    <rect x="0" y="20" width="120" height="100" rx="10" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+    <text x="60" y="55" font-size="28" text-anchor="middle">⛓️</text>
+    <text x="60" y="80" font-size="11" font-weight="700" fill="#991B1B" text-anchor="middle">&lt;&lt;System Actor&gt;&gt;</text>
+    <text x="60" y="98" font-size="11" font-weight="600" fill="#DC2626" text-anchor="middle">Smart Contract</text>
+    <!-- Label -->
+    <rect x="-10" y="145" width="140" height="28" rx="14" fill="#FEE2E2" stroke="#FECACA" stroke-width="1"/>
+    <text x="60" y="163" font-size="13" font-weight="700" fill="#B91C1C" text-anchor="middle">Ethereum EVM</text>
+    <text x="60" y="185" font-size="11" fill="#64748B" text-anchor="middle">Proof &amp; Audit Registry</text>
+  </g>
+
+  <!-- ==================== USE CASES (INSIDE BOUNDARY) ==================== -->
+  <!-- COLUMN 1: LEFT USE CASES (x: 460) -->
+  
+  <!-- UC 1: User Login & Auth -->
+  <g transform="translate(460, 150)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-01: User Login &amp; Auth</text>
+  </g>
+
+  <!-- UC 2: Register Donor Profile -->
+  <g transform="translate(460, 220)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-02: Register Donor Profile</text>
+  </g>
+
+  <!-- UC 3: Check 90-Day Cooldown -->
+  <g transform="translate(460, 290)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-03: Check 90-Day Cooldown</text>
+  </g>
+
+  <!-- UC 4: View History & Badges -->
+  <g transform="translate(460, 360)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-04: View History &amp; Badges</text>
+  </g>
+
+  <!-- UC 5: Search Blood Stock by Pincode -->
+  <g transform="translate(460, 500)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-05: Search Stock by Pincode</text>
+  </g>
+
+  <!-- UC 6: Submit Emergency Blood Request -->
+  <g transform="translate(460, 580)">
+    <ellipse cx="100" cy="24" rx="95" ry="24" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="23" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-06: Submit Emergency</text>
+    <text x="100" y="38" font-size="11" font-weight="600" fill="#0F172A" text-anchor="middle">Blood Request</text>
+  </g>
+
+  <!-- UC 7: Track Request Fulfillment -->
+  <g transform="translate(460, 660)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-07: Track Request Fulfillment</text>
+  </g>
+
+  <!-- UC 8: Verify Blood Unit QR Code -->
+  <g transform="translate(460, 740)">
+    <ellipse cx="100" cy="22" rx="95" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="100" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-08: Verify Unit QR Code</text>
+  </g>
+
+  <!-- COLUMN 2: RIGHT USE CASES (x: 770) -->
+
+  <!-- UC 9: Verify Donor Account On-Chain -->
+  <g transform="translate(770, 180)">
+    <ellipse cx="110" cy="24" rx="105" ry="24" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="23" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-09: Verify Donor Account</text>
+    <text x="110" y="38" font-size="11" font-weight="600" fill="#007C91" text-anchor="middle">(On-Chain Anchor)</text>
+  </g>
+
+  <!-- UC 10: Flag Ineligible Donor -->
+  <g transform="translate(770, 260)">
+    <ellipse cx="110" cy="22" rx="105" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-10: Flag Ineligible Donor</text>
+  </g>
+
+  <!-- UC 11: Intake Blood Unit & Generate QR -->
+  <g transform="translate(770, 340)">
+    <ellipse cx="110" cy="24" rx="105" ry="24" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="23" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-11: Intake Blood Unit &amp;</text>
+    <text x="110" y="38" font-size="11" font-weight="600" fill="#0F172A" text-anchor="middle">Generate QR Code</text>
+  </g>
+
+  <!-- UC 12: Update Lab Screening Test Status -->
+  <g transform="translate(770, 430)">
+    <ellipse cx="110" cy="24" rx="105" ry="24" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="23" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-12: Update Lab Screening</text>
+    <text x="110" y="38" font-size="11" font-weight="600" fill="#0F172A" text-anchor="middle">Test (Safe / Rejected)</text>
+  </g>
+
+  <!-- UC 13: Match & Allocate Blood Units -->
+  <g transform="translate(770, 520)">
+    <ellipse cx="110" cy="22" rx="105" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-13: Match &amp; Allocate Units</text>
+  </g>
+
+  <!-- UC 14: Issue Blood Units to Hospital -->
+  <g transform="translate(770, 600)">
+    <ellipse cx="110" cy="22" rx="105" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-14: Issue Units to Hospital</text>
+  </g>
+
+  <!-- UC 15: View Dashboard & Audit Logs -->
+  <g transform="translate(770, 680)">
+    <ellipse cx="110" cy="22" rx="105" ry="22" fill="#FFFFFF" stroke="#007C91" stroke-width="1.8"/>
+    <text x="110" y="27" font-size="12" font-weight="600" fill="#0F172A" text-anchor="middle">UC-15: View Dashboard &amp; Logs</text>
+  </g>
+
+  <!-- UC 16: Anchor Proof Hash on Ledger (Shared Engine) -->
+  <g transform="translate(770, 770)">
+    <ellipse cx="110" cy="24" rx="105" ry="24" fill="#FEF2F2" stroke="#DC2626" stroke-width="2"/>
+    <text x="110" y="23" font-size="12" font-weight="700" fill="#991B1B" text-anchor="middle">UC-16: Anchor Cryptographic</text>
+    <text x="110" y="38" font-size="11" font-weight="700" fill="#991B1B" text-anchor="middle">Proof Hash on Ledger</text>
+  </g>
+
+  <!-- ==================== CONNECTOR LINES ==================== -->
+  
+  <!-- Donor Connections -->
+  <path d="M 180 340 L 460 172" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 340 L 460 242" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 340 L 460 312" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 340 L 460 382" stroke="#0F172A" stroke-width="1.5"/>
+
+  <!-- Hospital Staff Connections -->
+  <path d="M 180 680 L 460 172" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 680 L 460 522" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 680 L 460 604" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 680 L 460 682" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 180 680 L 460 762" stroke="#0F172A" stroke-width="1.5"/>
+
+  <!-- Admin Connections -->
+  <path d="M 1180 340 L 990 204" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 980 282" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 990 364" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 990 454" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 980 542" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 980 622" stroke="#0F172A" stroke-width="1.5"/>
+  <path d="M 1180 340 L 980 702" stroke="#0F172A" stroke-width="1.5"/>
+
+  <!-- Blockchain System Actor Connection -->
+  <path d="M 1180 680 L 990 794" stroke="#DC2626" stroke-width="2"/>
+
+  <!-- <<include>> Dependency Arrows -->
+  <!-- UC-09 includes UC-16 -->
+  <path d="M 880 204 L 880 770" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowDashed)"/>
+  <text x="890" y="240" font-size="10" font-weight="600" fill="#64748B">&lt;&lt;include&gt;&gt;</text>
+
+  <!-- UC-11 includes UC-03 (Cooldown Check) -->
+  <path d="M 770 364 L 655 320" stroke="#007C91" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+  <text x="690" y="335" font-size="10" font-weight="700" fill="#007C91">&lt;&lt;include&gt;&gt;</text>
+
+  <!-- UC-11 includes UC-16 -->
+  <path d="M 920 364 L 920 770" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowDashed)"/>
+
+  <!-- UC-12 includes UC-16 -->
+  <path d="M 940 454 L 940 770" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowDashed)"/>
+
+  <!-- UC-14 includes UC-16 -->
+  <path d="M 960 622 L 960 770" stroke="#64748B" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrowDashed)"/>
+
+  <!-- UC-08 includes UC-16 (Audit) -->
+  <path d="M 655 762 L 770 790" stroke="#007C91" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#arrow)"/>
+  <text x="670" y="775" font-size="10" font-weight="700" fill="#007C91">&lt;&lt;include&gt;&gt;</text>
+
+</svg>
