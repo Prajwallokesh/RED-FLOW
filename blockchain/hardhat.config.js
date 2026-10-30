@@ -22,6 +22,14 @@ module.exports = {
       chainId: 1337,
       accounts: [PRIVATE_KEY],
     },
+    sepolia: {
+      url: process.env.SEPOLIA_RPC || 'https://ethereum-sepolia-rpc.publicnode.com',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    },
+    amoy: {
+      url: process.env.AMOY_RPC || 'https://rpc-amoy.polygon.technology',
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+    },
   },
   paths: {
     sources: './contracts',
