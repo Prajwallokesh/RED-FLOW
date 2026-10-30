@@ -20,21 +20,21 @@ const PREDEFINED_TEMPLATES = [
     label: 'Critical Trauma Emergency',
     urgency: 'critical',
     getText: (donor, sender) =>
-      `🚨 CRITICAL EMERGENCY: Immediate requirement for ${donor.bloodGroup} blood at ${sender?.name || 'Emergency Trauma Center'}. A patient requires emergency transfusion immediately. Please report to the blood bank or call us immediately.`,
+      `CRITICAL EMERGENCY: Immediate requirement for ${donor.bloodGroup} blood at ${sender?.name || 'Emergency Trauma Center'}. A patient requires emergency transfusion immediately. Please report to the blood bank or call us immediately.`,
   },
   {
     id: 'depletion',
     label: 'Low Blood Reserve Appeal',
     urgency: 'urgent',
     getText: (donor, sender) =>
-      `🩸 URGENT INVENTORY APPEAL: Our supply of ${donor.bloodGroup} whole blood at ${sender?.name || 'Hospital Blood Bank'} is running critically low. As a verified voluntary donor, your donation today can save lives.`,
+      `URGENT INVENTORY APPEAL: Our supply of ${donor.bloodGroup} whole blood at ${sender?.name || 'Hospital Blood Bank'} is running critically low. As a verified voluntary donor, your donation today can save lives.`,
   },
   {
     id: 'match',
     label: 'Direct Patient Compatibility Match',
     urgency: 'urgent',
     getText: (donor, sender) =>
-      `🏥 DIRECT COMPATIBILITY MATCH: An urgent requisition matching your specific ${donor.bloodGroup} blood group has been raised at ${sender?.name || 'our medical center'}. Please confirm your availability to donate.`,
+      `DIRECT COMPATIBILITY MATCH: An urgent requisition matching your specific ${donor.bloodGroup} blood group has been raised at ${sender?.name || 'our medical center'}. Please confirm your availability to donate.`,
   },
 ];
 
@@ -287,7 +287,7 @@ const GoogleDonorMap = ({
         recipientDonorId: notifyDonor.donorId || notifyDonor._id,
         bloodGroup: notifyDonor.bloodGroup,
         urgency: template.urgency,
-        title: `🚨 Urgent Need for ${notifyDonor.bloodGroup} Blood`,
+        title: `Urgent Need for ${notifyDonor.bloodGroup} Blood`,
         message: customMessage.trim(),
         senderPhone: user?.phone || '',
       });
@@ -445,7 +445,7 @@ const GoogleDonorMap = ({
                 </a>
               ` : ''}
               <button onclick="window.__redflowNotifyDonor('${donor.donorId || donor._id}')" style="background:#DC2626;color:#FFF;border:none;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 5px rgba(220,38,38,0.25);">
-                🚨 Send Urgent Blood Alert
+                Send Urgent Blood Alert
               </button>
             </div>
           </div>

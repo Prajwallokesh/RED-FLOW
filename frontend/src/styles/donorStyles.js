@@ -25,9 +25,9 @@ export const donorStyles = {
     height: 60,
     background: '#172B4D',
     flexShrink: 0,
-    position: 'sticky',
+    position: 'relative',
     top: 0,
-    zIndex: 40,
+    zIndex: 50,
     boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
   },
   appLogo:  { height: 32, width: 32, objectFit: 'contain' },
@@ -41,6 +41,7 @@ export const donorStyles = {
 
   body: {
     flex: 1,
+    minHeight: 0,
     overflowY: 'auto',
     overscrollBehavior: 'contain',
     WebkitOverflowScrolling: 'touch',
@@ -212,15 +213,15 @@ export const donorStyles = {
 
   tabBar: {
     display: 'flex',
-    height: 62,
+    height: 60,
     background: '#FFFFFF',
-    borderTop: '1px solid #EBEBEB',
+    borderTop: '1px solid #E2E8F0',
     flexShrink: 0,
-    boxShadow: '0 -3px 10px rgba(0,0,0,0.05)',
+    boxShadow: '0 -2px 10px rgba(0,0,0,0.06)',
     paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-    position: 'sticky',
+    position: 'relative',
     bottom: 0,
-    zIndex: 20,
+    zIndex: 50,
   },
   tabBtn: {
     flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',

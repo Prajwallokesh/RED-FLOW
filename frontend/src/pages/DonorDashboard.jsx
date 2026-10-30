@@ -35,80 +35,18 @@ import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import logo from '../assets/logo.png';
 
-/* ── Clinically Verified Blood Tips & Quotes ─────────────────────── */
+/* ── Clinically Verified Blood Insights (Concise 1-2 lines, No Emojis) ── */
 const BLOOD_INSIGHTS = [
-  {
-    id: 1,
-    category: 'Life Saver',
-    badgeColor: '#DC2626',
-    title: '1 Whole Blood Unit = Up to 3 Lives Saved',
-    fact: 'A single 450ml donation can be separated into Red Blood Cells, Platelets, and Fresh Plasma to treat trauma, cancer, and surgery patients.',
-    quote: '“To give blood is to give another birthday, another anniversary, another day at the park.”',
-    author: 'World Health Organization'
-  },
-  {
-    id: 2,
-    category: 'Donor Health',
-    badgeColor: '#059669',
-    title: 'Regulates Body Iron & Supports Heart Health',
-    fact: 'Regular blood donation helps shed excess iron stores from blood vessels, reducing oxidative stress and lowering arterial plaque risks.',
-    quote: '“Blood donation is not just giving life to someone else; it rejuvenates your own cardiovascular vitality.”',
-    author: 'Clinical Hematology Insights'
-  },
-  {
-    id: 3,
-    category: 'Preparation Tip',
-    badgeColor: '#0284C7',
-    title: 'Pre-Donation Hydration is Crucial',
-    fact: 'Drinking 500ml of clean water 30 minutes before donating keeps your blood pressure optimal and cuts post-donation dizziness by 90%.',
-    quote: '“Hydrated donors experience faster collection times and immediate, smooth energy recovery.”',
-    author: 'National Blood Transfusion Guidelines'
-  },
-  {
-    id: 4,
-    category: 'Biological Science',
-    badgeColor: '#7C3AED',
-    title: 'The 90-Day Natural Regeneration Cycle',
-    fact: 'Your plasma fluid volume replaces itself within 48 hours, while your red blood cells fully renew in 4–8 weeks. Waiting 90 days keeps hemoglobin peak.',
-    quote: '“Your body creates roughly 2 million new, robust red blood cells every single second.”',
-    author: 'Human Physiology Fact'
-  },
-  {
-    id: 5,
-    category: 'Emergency Lifeline',
-    badgeColor: '#D97706',
-    title: 'O-Negative: The Universal Life Guardian',
-    fact: 'Only ~7% of people have O-Negative blood. Because O- red cells carry no A, B, or Rh antigens, they can be given to ANY emergency patient immediately.',
-    quote: '“O-Negative donors are the quiet guardians of emergency trauma centers worldwide.”',
-    author: 'Emergency Trauma Network'
-  },
-  {
-    id: 6,
-    category: 'Plasma Superpower',
-    badgeColor: '#2563EB',
-    title: 'AB-Positive: Universal Plasma Champion',
-    fact: 'While O- is universal for red cells, AB-Positive is the Universal Plasma Donor! Their plasma is safe for any patient suffering from burns or severe trauma.',
-    quote: '“Every blood group has a unique superpower in emergency medicine.”',
-    author: 'RedFlow Clinical Advisory'
-  },
-  {
-    id: 7,
-    category: 'Shelf Life',
-    badgeColor: '#DC2626',
-    title: 'Platelets Expire in Just 5 Days',
-    fact: 'Unlike frozen plasma stored for months, platelets expire in just 5 days at room temperature. This is why regular voluntary donations are essential 365 days a year.',
-    quote: '“The need for blood is constant. The supply depends entirely on people like you.”',
-    author: 'Red Cross Society'
-  },
-  {
-    id: 8,
-    category: 'Inspiration',
-    badgeColor: '#E11D48',
-    title: 'Heroes Walk Among Us Every Day',
-    fact: 'Over 12,000 blood donations are needed in India every single day. A single voluntary act turns an ordinary day into a life-saving miracle.',
-    quote: '“You don’t have to be a doctor or wear a cape to save human lives. Just roll up your sleeve.”',
-    author: 'RedFlow Donor Community'
-  }
+  "One whole blood donation can save up to three lives by providing red cells, platelets, and plasma.",
+  "Drinking 500 ml of water before donating maintains blood pressure and helps prevent lightheadedness.",
+  "Red blood cells naturally renew within 4 to 8 weeks, making a 90-day rest interval safe for regular donors.",
+  "O-Negative blood can be transfused into patients of any blood group during urgent trauma emergencies.",
+  "AB-Positive individuals are universal plasma donors, vital for treating severe burn and shock victims.",
+  "Regular voluntary blood donation helps regulate body iron levels and supports healthy cardiovascular function.",
+  "Donated platelets have a shelf life of just 5 days, requiring a constant voluntary supply year-round.",
+  "Plasma volume replenishes naturally within 24 to 48 hours after donating with proper fluid intake.",
+  "Every whole blood donation takes less than 15 minutes and can transform multiple patients' lives.",
+  "All donated units undergo rigorous screening for five major infectious markers prior to hospital release."
 ];
 
 /* ── Status Pill ─────────────────────────────────────────────────── */
@@ -170,7 +108,7 @@ const DonorDashboard = () => {
   const [showEligModal, setShowEligModal] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [showTipModal, setShowTipModal]             = useState(false);
-  const [tipIndex, setTipIndex]                     = useState(0);
+  const [tipIndex, setTipIndex]                     = useState(() => Math.floor(Math.random() * BLOOD_INSIGHTS.length));
   const [copiedTip, setCopiedTip]                   = useState(false);
   const [loading, setLoading]         = useState(true);
   const [isSyncing, setIsSyncing]     = useState(false);
@@ -462,7 +400,7 @@ const DonorDashboard = () => {
         </div>
       )}
 
-      {/* ── Daily Blood Insight Snippet Card ── */}
+      {/* ── Daily Blood Insight Snippet Card (1-2 lines, No Emojis, Auto-selected) ── */}
       <div
         onClick={() => setShowTipModal(true)}
         style={{
@@ -477,7 +415,7 @@ const DonorDashboard = () => {
           cursor: 'pointer',
           transition: 'transform 0.15s ease, box-shadow 0.15s ease',
         }}
-        title="Tap to read blood tips and donor insights"
+        title="Tap to view full blood insight"
       >
         <div style={{
           width: 36, height: 36, borderRadius: 10,
@@ -492,20 +430,29 @@ const DonorDashboard = () => {
             <span style={{
               fontSize: 10, fontWeight: 800, color: '#7C3AED',
               textTransform: 'uppercase', letterSpacing: 0.5,
-              background: '#FFFFFF', padding: '1px 6px', borderRadius: 4,
+              background: '#FFFFFF', padding: '2px 7px', borderRadius: 4,
+              display: 'inline-flex', alignItems: 'center', gap: 4,
             }}>
-              💡 Daily Blood Insight
+              <Sparkles size={11} color="#7C3AED" />
+              <span>Blood Insight</span>
             </span>
             <span style={{ fontSize: 11, color: '#7C3AED', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-              <span>Read Tips</span>
+              <span>View</span>
               <ChevronRight size={12} />
             </span>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#1E1B4B', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {BLOOD_INSIGHTS[tipIndex]?.title}
-          </div>
-          <div style={{ fontSize: 11, color: '#581C87', marginTop: 2, lineHeight: 1.3, fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {BLOOD_INSIGHTS[tipIndex]?.quote}
+          <div style={{
+            fontSize: 12.5,
+            fontWeight: 600,
+            color: '#1E1B4B',
+            marginTop: 4,
+            lineHeight: 1.4,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+          }}>
+            {BLOOD_INSIGHTS[tipIndex]}
           </div>
         </div>
       </div>
@@ -650,7 +597,7 @@ const DonorDashboard = () => {
 
             // Clean formatted stage label
             const stageLabel = (() => {
-              if (isIssued) return 'Stage 4: Transfused (Saved a Life! ❤️)';
+              if (isIssued) return 'Stage 4: Transfused (Life Saved)';
               if (isRequested) return 'Stage 4: Allocated to Hospital';
               if (isAvailable && isSafe) return 'Stage 3: Cold Storage (Available)';
               if (isRejected) return 'Stage 2: Screening Rejected';
@@ -950,7 +897,7 @@ const DonorDashboard = () => {
                       fontWeight: 800,
                       textTransform: 'uppercase',
                     }}>
-                      {n.urgency === 'critical' ? '🚨 Critical Need' : '⚡ Urgent Appeal'}
+                      {n.urgency === 'critical' ? 'Critical Need' : 'Urgent Appeal'}
                     </span>
                     <span style={{
                       background: 'rgba(211,47,47,0.1)',
@@ -1365,54 +1312,38 @@ const DonorDashboard = () => {
             </div>
 
             <div style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              {/* Category Pill */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{
-                  background: `${BLOOD_INSIGHTS[tipIndex]?.badgeColor}15`,
-                  color: BLOOD_INSIGHTS[tipIndex]?.badgeColor,
+                  background: '#EDE9FE',
+                  color: '#6D28D9',
                   borderRadius: 100,
-                  padding: '4px 10px',
+                  padding: '3px 10px',
                   fontSize: 11,
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
                 }}>
-                  {BLOOD_INSIGHTS[tipIndex]?.category}
+                  Insight #{tipIndex + 1}
                 </span>
 
-                <span style={{ fontSize: 11, color: '#64748B', fontWeight: 700 }}>
-                  Tip {tipIndex + 1} of {BLOOD_INSIGHTS.length}
+                <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>
+                  {tipIndex + 1} of {BLOOD_INSIGHTS.length}
                 </span>
               </div>
 
-              {/* Title & Fact */}
-              <div>
-                <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0F172A', margin: '0 0 6px 0', lineHeight: 1.3 }}>
-                  {BLOOD_INSIGHTS[tipIndex]?.title}
-                </h3>
-                <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                  {BLOOD_INSIGHTS[tipIndex]?.fact}
-                </p>
-              </div>
-
-              {/* Inspiring Quote Box */}
+              {/* 1-2 line insight */}
               <div style={{
                 background: '#F8FAFC',
-                borderLeft: `4px solid ${BLOOD_INSIGHTS[tipIndex]?.badgeColor || '#7C3AED'}`,
+                borderLeft: '4px solid #7C3AED',
                 borderRadius: '0 10px 10px 0',
-                padding: '12px 14px',
-                fontStyle: 'italic',
+                padding: '14px 16px',
                 color: '#1E293B',
-                fontSize: 13,
-                lineHeight: 1.45,
+                fontSize: 13.5,
+                fontWeight: 600,
+                lineHeight: 1.5,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
               }}>
-                <div style={{ fontWeight: 600, color: '#334155' }}>
-                  {BLOOD_INSIGHTS[tipIndex]?.quote}
-                </div>
-                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4, fontStyle: 'normal', fontWeight: 700 }}>
-                  — {BLOOD_INSIGHTS[tipIndex]?.author}
-                </div>
+                {BLOOD_INSIGHTS[tipIndex]}
               </div>
 
               {/* Navigation Controls */}
@@ -1420,8 +1351,7 @@ const DonorDashboard = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const text = `${BLOOD_INSIGHTS[tipIndex]?.title}\n\n${BLOOD_INSIGHTS[tipIndex]?.quote} — RedFlow`;
-                    navigator.clipboard?.writeText(text);
+                    navigator.clipboard?.writeText(BLOOD_INSIGHTS[tipIndex]);
                     setCopiedTip(true);
                     setTimeout(() => setCopiedTip(false), 2000);
                   }}
@@ -1442,7 +1372,7 @@ const DonorDashboard = () => {
                   }}
                 >
                   {copiedTip ? <Check size={15} color="#059669" /> : <Share2 size={15} color="#475569" />}
-                  <span>{copiedTip ? 'Copied!' : 'Share Quote'}</span>
+                  <span>{copiedTip ? 'Copied' : 'Copy'}</span>
                 </button>
 
                 <button
@@ -1467,8 +1397,8 @@ const DonorDashboard = () => {
                     boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)',
                   }}
                 >
+                  <RefreshCw size={14} />
                   <span>Next Insight</span>
-                  <ArrowRight size={15} />
                 </button>
               </div>
             </div>
