@@ -297,7 +297,7 @@ router.put('/:donorId/verify', auth, role(['admin']), async (req, res, next) => 
     if (!donor) {
       return res.status(404).json({ error: 'Donor not found', code: 'NOT_FOUND' });
     }
-    if (donor.isVerified) {
+    if (donor.isVerified && donor.eligibilityStatus === 'verified' && donor.blockchainTxHash) {
       return res.status(409).json({ error: 'Donor is already verified', code: 'ALREADY_VERIFIED' });
     }
     if (donor.isFlagged) {
@@ -305,7 +305,7 @@ router.put('/:donorId/verify', auth, role(['admin']), async (req, res, next) => 
     }
 
     // Compute deterministic donor hash
-    const chainId = process.env.CHAIN_ID || '5777';
+    const chainId = process.env.CHAIN_ID || '11155111';
     const donorHash = hashDonor({
       chainId,
       donorId:          donor.donorId,

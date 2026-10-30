@@ -1480,7 +1480,7 @@ const AdminDashboard = () => {
                           ) : (
                             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                               <StatusPill status={d.eligibilityStatus} type="donor" />
-                              {!d.isVerified && (
+                              {(!d.isVerified || d.eligibilityStatus !== 'verified' || !d.blockchainTxHash) && (
                                 <button
                                   onClick={() => setVerifyTarget(d)}
                                   disabled={verifying === d.donorId}
