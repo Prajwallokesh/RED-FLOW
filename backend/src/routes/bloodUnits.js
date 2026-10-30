@@ -397,6 +397,12 @@ router.put('/:unitId/availability', auth, role(['admin']), async (req, res, next
         }
         await emergencyReq.save();
       }
+    } else if (status === 'available') {
+      // If released back to storage, remove from any request that had it allocated
+      await EmergencyRequest.updateMany(
+        { allocatedUnits: unit.unitId },
+        { $pull: { allocatedUnits: unit.unitId } }
+      );
     }
 
     unit.availabilityStatus = status;

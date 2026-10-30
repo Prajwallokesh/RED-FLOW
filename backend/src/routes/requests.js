@@ -168,7 +168,7 @@ router.post('/:requestId/match', auth, role(['admin']), async (req, res, next) =
     }
 
     const now = new Date();
-    // 1. Find tested-safe available blood units
+    // 1. Strictly find safe, tested, unexpired blood units matching the requested blood group
     const availableUnits = await BloodUnit.find({
       bloodGroup: request.bloodGroup,
       testStatus: 'safe',
@@ -177,6 +177,30 @@ router.post('/:requestId/match', auth, role(['admin']), async (req, res, next) =
     }).sort({ expiryDate: 1 }); // FIFO: oldest valid units allocated first
 
     const needed = request.unitsRequired;
+
+    // Strict Enforcement: Only allocate if matching blood unit exists!
+    if (availableUnits.length === 0) {
+      // Find nearby registered donors for emergency outreach
+      const matchedDonors = await searchDonorsByLocation({
+        bloodGroup: request.bloodGroup,
+        pincode: request.pincode,
+        callerRole: 'admin',
+        limit: 10,
+      });
+      request.matchedDonors = matchedDonors;
+      request.allocatedUnits = [];
+      request.status = 'open'; // Strictly keep open because NO blood unit was allocated
+      await request.save();
+
+      return res.status(409).json({
+        error: `Cannot allocate: 0 units of ${request.bloodGroup} available in Cold Vault. Intake & test units first, or contact the ${matchedDonors.length} nearby donors.`,
+        code: 'NO_BLOOD_UNITS_AVAILABLE',
+        request,
+        allocatedCount: 0,
+        matchedDonorsCount: matchedDonors.length,
+      });
+    }
+
     const allocated = availableUnits.slice(0, needed);
     const allocatedUnitIds = allocated.map((u) => u.unitId);
 
@@ -221,14 +245,15 @@ router.post('/:requestId/match', auth, role(['admin']), async (req, res, next) =
     }
     request.matchedDonors = matchedDonors;
 
-    request.status = allocated.length > 0 || matchedDonors.length > 0 ? 'matched' : 'open';
+    // Status is strictly 'matched' because valid blood units were allocated!
+    request.status = 'matched';
     await request.save();
 
     return res.status(200).json({
       request,
       allocatedCount: allocated.length,
       matchedDonorsCount: matchedDonors.length,
-      message: `Matched ${allocated.length} ready blood unit(s) and ${matchedDonors.length} nearby donor(s).`,
+      message: `Successfully allocated ${allocated.length} safe unit(s) of ${request.bloodGroup} from Cold Vault to Request #${request.requestId}.${matchedDonors.length > 0 ? ` Found ${matchedDonors.length} backup donors.` : ''}`,
     });
   } catch (err) {
     next(err);

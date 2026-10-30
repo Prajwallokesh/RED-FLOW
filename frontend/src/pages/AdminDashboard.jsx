@@ -68,27 +68,27 @@ const StatCard = ({ icon, label, value, color }) => (
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [mainNav, setMainNav]         = useState('analytics'); // 'analytics' | 'inventory' | 'donors' | 'requests'
+  const [mainNav, setMainNav] = useState('analytics'); // 'analytics' | 'inventory' | 'donors' | 'requests'
 
-  const [donorTab, setDonorTab]       = useState('pending');   // 'pending' | 'verified' | 'flagged'
-  const [unitTab, setUnitTab]         = useState('all');       // 'all' | 'available' | 'testing' | 'issued'
-  
-  const [pending, setPending]         = useState([]);
-  const [allDonors, setAllDonors]     = useState([]);
-  const [bloodUnits, setBloodUnits]   = useState([]);
+  const [donorTab, setDonorTab] = useState('pending');   // 'pending' | 'verified' | 'flagged'
+  const [unitTab, setUnitTab] = useState('all');       // 'all' | 'available' | 'testing' | 'issued'
+
+  const [pending, setPending] = useState([]);
+  const [allDonors, setAllDonors] = useState([]);
+  const [bloodUnits, setBloodUnits] = useState([]);
   const [emergencyRequests, setEmergencyRequests] = useState([]);
   const [dashboardStats, setDashboardStats] = useState(null);
-  
-  const [loading, setLoading]         = useState(true);
-  const [verifying, setVerifying]     = useState(null);
+
+  const [loading, setLoading] = useState(true);
+  const [verifying, setVerifying] = useState(null);
   const [verifyTarget, setVerifyTarget] = useState(null);
-  const [flagTarget, setFlagTarget]   = useState(null);
+  const [flagTarget, setFlagTarget] = useState(null);
   const [showCollectModal, setShowCollectModal] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [labTestTarget, setLabTestTarget] = useState(null);
   const [allocateTarget, setAllocateTarget] = useState(null);
   const [issueTarget, setIssueTarget] = useState(null);
-  const [toast, setToast]             = useState(null);
+  const [toast, setToast] = useState(null);
   const [blockchainSummary, setBlockchainSummary] = useState(null);
 
   // Global District Deployment Scope State
@@ -96,9 +96,9 @@ const AdminDashboard = () => {
 
   // Nearby Donor Locator State
   const [nearbyPincode, setNearbyPincode] = useState('573201');
-  const [nearbyGroup, setNearbyGroup]     = useState('ANY');
-  const [nearbyRadius, setNearbyRadius]   = useState(50);
-  const [nearbyDonors, setNearbyDonors]   = useState([]);
+  const [nearbyGroup, setNearbyGroup] = useState('ANY');
+  const [nearbyRadius, setNearbyRadius] = useState(50);
+  const [nearbyDonors, setNearbyDonors] = useState([]);
   const [searchingNearby, setSearchingNearby] = useState(false);
 
   // Hospital Accounts State
@@ -264,8 +264,8 @@ const AdminDashboard = () => {
   const displayedDonors = donorTab === 'pending'
     ? filteredPending.filter(d => !d.isFlagged)
     : donorTab === 'flagged'
-    ? filteredDonors.filter(d => d.isFlagged)
-    : filteredDonors.filter(d => d.isVerified && !d.isFlagged);
+      ? filteredDonors.filter(d => d.isFlagged)
+      : filteredDonors.filter(d => d.isVerified && !d.isFlagged);
 
   // Filtered Blood Units
   const displayedUnits = unitTab === 'all'
@@ -302,7 +302,7 @@ const AdminDashboard = () => {
             style={{ ...adminStyles.navBtn, ...(mainNav === 'analytics' ? adminStyles.navBtnActive : {}) }}
           >
             <div style={adminStyles.navIconWrap}><BarChart3 size={17} /></div>
-            <span style={{ flex: 1 }}>Overview & KPIs</span>
+            <span style={{ flex: 1 }}>Overview</span>
           </button>
 
           <div style={{ ...adminStyles.navGroupTitle, marginTop: 14 }}>OPERATIONS & SUPPLY</div>
@@ -707,20 +707,26 @@ const AdminDashboard = () => {
                     <Droplet size={16} color="#DC2626" />
                     <span style={{ fontSize: 13, fontWeight: 800, color: '#0F172A' }}>Blood Vault Inventory by Group</span>
                   </div>
-                  <button
-                    onClick={() => setMainNav('inventory')}
-                    style={{
-                      background: 'transparent', border: 'none', color: '#0284C7',
-                      fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
-                    }}
-                  >
-                    <span>Manage Inventory</span>
-                    <ArrowUpRight size={12} />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: 11, color: '#059669', fontWeight: 700, background: '#ECFDF5', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: 6 }}>
+                      {bloodUnits.filter(u => u.availabilityStatus === 'available' && (!u.testStatus || u.testStatus === 'safe') && (!u.expiryDate || new Date(u.expiryDate) > new Date())).length} Units in Vault
+                    </span>
+                    <button
+                      onClick={() => setMainNav('inventory')}
+                      style={{
+                        background: 'transparent', border: 'none', color: '#0284C7',
+                        fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                      }}
+                    >
+                      <span>Manage Inventory</span>
+                      <ArrowUpRight size={12} />
+                    </button>
+                  </div>
                 </div>
                 <div style={{ padding: 16, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
                   {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(bg => {
-                    const count = dashboardStats?.availableUnits?.byGroup?.[bg] ?? bloodUnits.filter(u => u.bloodGroup === bg && u.availabilityStatus === 'available').length;
+                    const unitsInVault = bloodUnits.filter(u => u.bloodGroup === bg && u.availabilityStatus === 'available' && (!u.testStatus || u.testStatus === 'safe') && (!u.expiryDate || new Date(u.expiryDate) > new Date())).length;
+                    const count = bloodUnits.length > 0 ? unitsInVault : (dashboardStats?.availableUnits?.byGroup?.[bg] ?? 0);
                     const isAdequate = count >= 3;
                     const isLow = count > 0 && count < 3;
                     return (
@@ -885,12 +891,12 @@ const AdminDashboard = () => {
             {/* Filter Tabs */}
             <div style={adminStyles.filterTabs}>
               {[
-                { id: 'all',       label: 'All Units' },
+                { id: 'all', label: 'All Units' },
                 { id: 'collected', label: 'Collected (Pending Test)' },
                 { id: 'available', label: 'Available for Transfusion' },
-                { id: 'issued',    label: 'Issued' },
-                { id: 'expired',   label: 'Expired' },
-                { id: 'rejected',  label: 'Rejected' },
+                { id: 'issued', label: 'Issued' },
+                { id: 'expired', label: 'Expired' },
+                { id: 'rejected', label: 'Rejected' },
               ].map(ft => (
                 <button
                   key={ft.id}
@@ -1370,7 +1376,7 @@ const AdminDashboard = () => {
                         <td style={adminStyles.td}><span style={adminStyles.bloodGroupBadge}>{d.bloodGroup}</span></td>
                         <td style={adminStyles.td}>{d.age} yrs / {d.gender}</td>
                         <td style={adminStyles.td}>{d.city || d.district} ({d.pincode})</td>
-                        
+
                         {donorTab === 'flagged' && (
                           <td style={{ ...adminStyles.td, maxWidth: 220 }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: '#DC2626', background: '#FEF2F2', padding: '4px 8px', borderRadius: 6, border: '1px solid #FECDD3' }}>
@@ -1492,64 +1498,107 @@ const AdminDashboard = () => {
                   ) : emergencyRequests.length === 0 ? (
                     <tr><td colSpan={8} style={{ padding: 32, textAlign: 'center', color: '#6C757D' }}>No emergency requests recorded.</td></tr>
                   ) : (
-                    emergencyRequests.map(r => (
-                      <tr key={r._id} style={adminStyles.tableRow}>
-                        <td style={{ ...adminStyles.td, fontWeight: 700, fontFamily: 'monospace' }}>#{r.requestId}</td>
-                        <td style={adminStyles.td}>
-                          <div style={{ fontWeight: 700, color: '#172B4D' }}>{r.hospitalName}</div>
-                          <div style={{ fontSize: 11, color: '#6C757D' }}>{r.contactNumber}</div>
-                        </td>
-                        <td style={adminStyles.td}>
-                          <span style={adminStyles.bloodGroupBadge}>{r.bloodGroup}</span>
-                          <span style={{ fontSize: 12, color: '#6C757D', marginLeft: 4 }}>({r.unitsRequired} Units)</span>
-                        </td>
-                        <td style={adminStyles.td}>{r.pincode}</td>
-                        <td style={adminStyles.td}>
-                          <span style={{
-                            background: r.urgency === 'critical' ? 'rgba(211,47,47,0.15)' : r.urgency === 'urgent' ? 'rgba(255,160,0,0.15)' : 'rgba(0,124,145,0.15)',
-                            color: r.urgency === 'critical' ? '#D32F2F' : r.urgency === 'urgent' ? '#E65100' : '#007C91',
-                            borderRadius: 100, padding: '3px 8px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase',
-                          }}>
-                            {r.urgency}
-                          </span>
-                        </td>
-                        <td style={adminStyles.td}>
-                          <StatusPill status={r.status} type="unit" />
-                        </td>
-                        <td style={adminStyles.td}>
-                          {r.allocatedUnits && r.allocatedUnits.length > 0 ? (
-                            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                              {r.allocatedUnits.map(uid => (
-                                <span key={uid} style={{ background: '#2E7D32', color: '#FFF', borderRadius: 4, padding: '2px 6px', fontSize: 11, fontFamily: 'monospace' }}>
-                                  #{uid}
-                                </span>
-                              ))}
+                    emergencyRequests.map(r => {
+                      const inVaultCount = bloodUnits.filter(
+                        u => u.bloodGroup === r.bloodGroup &&
+                             u.availabilityStatus === 'available' &&
+                             (!u.testStatus || u.testStatus === 'safe') &&
+                             (!u.expiryDate || new Date(u.expiryDate) > new Date())
+                      ).length;
+                      const hasStock = inVaultCount > 0;
+
+                      return (
+                        <tr key={r._id} style={adminStyles.tableRow}>
+                          <td style={{ ...adminStyles.td, fontWeight: 700, fontFamily: 'monospace' }}>#{r.requestId}</td>
+                          <td style={adminStyles.td}>
+                            <div style={{ fontWeight: 700, color: '#172B4D' }}>{r.hospitalName}</div>
+                            <div style={{ fontSize: 11, color: '#6C757D' }}>{r.contactNumber}</div>
+                          </td>
+                          <td style={adminStyles.td}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={adminStyles.bloodGroupBadge}>{r.bloodGroup}</span>
+                              <span style={{ fontSize: 12, color: '#0F172A', fontWeight: 600 }}>({r.unitsRequired} {r.unitsRequired === 1 ? 'Unit' : 'Units'})</span>
                             </div>
-                          ) : (
-                            <span style={{ fontSize: 12, color: '#6C757D' }}>None allocated</span>
-                          )}
-                        </td>
-                        <td style={adminStyles.td}>
-                          <div style={{ display: 'flex', gap: 6 }}>
-                            {r.status === 'open' && (
-                              <button onClick={() => handleMatchRequest(r.requestId)} style={adminStyles.verifyBtn}>
-                                Match & Allocate
-                              </button>
+                            <div style={{ marginTop: 4, display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }}>
+                              {hasStock ? (
+                                <span style={{ color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <CheckCircle2 size={12} color="#059669" />
+                                  {inVaultCount} in Vault (Ready)
+                                </span>
+                              ) : (
+                                <span style={{ color: '#DC2626', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <AlertTriangle size={12} color="#DC2626" />
+                                  0 in Vault (Out of Stock)
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td style={adminStyles.td}>{r.pincode}</td>
+                          <td style={adminStyles.td}>
+                            <span style={{
+                              background: r.urgency === 'critical' ? 'rgba(211,47,47,0.15)' : r.urgency === 'urgent' ? 'rgba(255,160,0,0.15)' : 'rgba(0,124,145,0.15)',
+                              color: r.urgency === 'critical' ? '#D32F2F' : r.urgency === 'urgent' ? '#E65100' : '#007C91',
+                              borderRadius: 100, padding: '3px 8px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase',
+                            }}>
+                              {r.urgency}
+                            </span>
+                          </td>
+                          <td style={adminStyles.td}>
+                            <StatusPill status={r.status} type="unit" />
+                          </td>
+                          <td style={adminStyles.td}>
+                            {r.allocatedUnits && r.allocatedUnits.length > 0 ? (
+                              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                                {r.allocatedUnits.map(uid => (
+                                  <span key={uid} style={{ background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#047857', borderRadius: 4, padding: '2px 7px', fontSize: 11, fontFamily: 'monospace', fontWeight: 800 }}>
+                                    #{uid}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 600 }}>None allocated</span>
+                                {r.matchedDonors?.length > 0 && (
+                                  <span style={{ fontSize: 10, color: '#0284C7', fontWeight: 700 }}>
+                                    {r.matchedDonors.length} nearby donors found
+                                  </span>
+                                )}
+                              </div>
                             )}
-                            {r.status === 'matched' && r.allocatedUnits?.length > 0 && (
-                              <button onClick={() => handleIssueRequest(r.requestId)} style={adminStyles.issueBtn}>
-                                Dispatch & Issue
-                              </button>
-                            )}
-                            {['open', 'matched'].includes(r.status) && (
-                              <button onClick={() => handleRejectRequest(r.requestId)} style={adminStyles.flagBtn}>
-                                Reject
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                          <td style={adminStyles.td}>
+                            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                              {r.status === 'open' && (
+                                <button
+                                  onClick={() => handleMatchRequest(r.requestId)}
+                                  disabled={!hasStock}
+                                  style={{
+                                    ...adminStyles.verifyBtn,
+                                    background: hasStock ? '#0F172A' : '#E2E8F0',
+                                    color: hasStock ? '#FFFFFF' : '#94A3B8',
+                                    cursor: hasStock ? 'pointer' : 'not-allowed',
+                                    border: 'none',
+                                  }}
+                                  title={hasStock ? `Allocate matching ${r.bloodGroup} units from Cold Vault` : `Cannot allocate: 0 units of ${r.bloodGroup} available in Vault`}
+                                >
+                                  {hasStock ? 'Match & Allocate' : 'Out of Stock'}
+                                </button>
+                              )}
+                              {r.status === 'matched' && r.allocatedUnits?.length > 0 && (
+                                <button onClick={() => handleIssueRequest(r.requestId)} style={adminStyles.issueBtn}>
+                                  Dispatch & Issue
+                                </button>
+                              )}
+                              {['open', 'matched'].includes(r.status) && (
+                                <button onClick={() => handleRejectRequest(r.requestId)} style={adminStyles.flagBtn}>
+                                  Reject
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
