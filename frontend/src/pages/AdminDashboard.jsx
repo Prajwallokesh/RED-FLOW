@@ -409,7 +409,7 @@ const AdminDashboard = () => {
                 {user?.name || 'SMPS Admin'}
               </div>
               <div style={{ fontSize: 11, color: '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {user?.email || 'admin@redflow.test'}
+                {user?.email || 'smps@redflow.com'}
               </div>
             </div>
           </div>

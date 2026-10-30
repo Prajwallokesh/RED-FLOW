@@ -69,17 +69,17 @@ async function seed() {
   ]);
   console.log('[Seed] All collections cleared.');
 
-  const passwordHash     = await bcrypt.hash('Admin@123', 10);
+  const passwordHash     = await bcrypt.hash('smps@123', 10);
   const hospitalPassHash = await bcrypt.hash('Hospital@123', 10);
   const donorPassHash    = await bcrypt.hash('Donor@123', 10);
 
   // Step 2: Create Admin
   await User.create({
-    name: 'RedFlow Admin', email: 'admin@redflow.test', passwordHash,
-    role: 'admin', phone: '9999900000', address: 'Central Health HQ',
-    district: 'Hassan', state: 'Karnataka', pincode: '573201',
+    name: 'SMPS Admin', email: 'smps@redflow.com', passwordHash,
+    role: 'admin', phone: '+91 99999 99999', address: 'Central Health HQ',
+    district: 'Bengaluru', state: 'Karnataka', pincode: '560001',
   });
-  console.log('[Seed] Admin created: admin@redflow.test / Admin@123');
+  console.log('[Seed] Admin created: smps@redflow.com / smps@123');
 
   // Step 3: Create Hospital Accounts
   const hospitals = await User.insertMany(
@@ -272,7 +272,7 @@ async function seed() {
   console.log(' RedFlow Clinical Seed Data — Seed Complete!');
   console.log('════════════════════════════════════════════════════');
   console.log('\n  ADMIN');
-  console.log('  admin@redflow.test  /  Admin@123\n');
+  console.log('  smps@redflow.com  /  smps@123\n');
   console.log('  HOSPITALS  (password: Hospital@123)');
   for (const h of hospitals) console.log(`  • ${h.email}`);
   console.log('\n  REGISTERED DONOR LOGINS  (password: Donor@123)');
