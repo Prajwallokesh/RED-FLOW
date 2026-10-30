@@ -22,10 +22,11 @@ let _contract = null;
 
 const getProvider = () => {
   if (_provider) return _provider;
-  const rpc = process.env.GANACHE_RPC || 'http://127.0.0.1:7545';
+  const rpc = process.env.BLOCKCHAIN_RPC_URL || process.env.SEPOLIA_RPC || process.env.GANACHE_RPC || 'http://127.0.0.1:7545';
   const chainId = parseInt(process.env.CHAIN_ID || '1337', 10);
+  const name = chainId === 11155111 ? 'sepolia' : (chainId === 1337 ? 'ganache' : 'custom');
   try {
-    _provider = new ethers.JsonRpcProvider(rpc, { chainId, name: 'ganache' }, { staticNetwork: true });
+    _provider = new ethers.JsonRpcProvider(rpc, { chainId, name }, { staticNetwork: true });
     return _provider;
   } catch (err) {
     console.warn('[Blockchain] Failed to initialize provider:', err.message);
@@ -40,8 +41,11 @@ const getContract = () => {
   const provider = getProvider();
   if (!provider) return null;
 
+  const privKey = process.env.ADMIN_PRIVATE_KEY || process.env.PRIVATE_KEY;
+  if (!privKey) return null;
+
   try {
-    const signer = new ethers.Wallet(process.env.ADMIN_PRIVATE_KEY, provider);
+    const signer = new ethers.Wallet(privKey, provider);
     return new ethers.Contract(addr, ABI, signer);
   } catch (err) {
     console.warn('[Blockchain] Failed to initialize contract instance:', err.message);
@@ -270,10 +274,10 @@ const getBlockchainSummary = async () => {
     totalTransactions: totalTx,
     confirmedTransactions: confirmedTx,
     failedTransactions: failedTx,
-    smartContractAddress: process.env.CONTRACT_ADDRESS || '0xA990b5Fe5948cC41648eE4D8D26Ac5f5FE9557BE',
-    adminWalletAddress: process.env.ADMIN_WALLET_ADDRESS || '0xA00D124986D984cA438f646903f3A3f485167154',
-    chainId: process.env.CHAIN_ID || '1337',
-    rpcUrl: process.env.GANACHE_RPC || 'http://127.0.0.1:7545',
+    smartContractAddress: process.env.CONTRACT_ADDRESS || '0x0fdD65Bb3a4Bc6D5742697B7f596cF53b22AADE4',
+    adminWalletAddress: process.env.ADMIN_WALLET_ADDRESS || '0x49a39dCF6A26C2b93829C2F73D7dC7Cc26e02663',
+    chainId: process.env.CHAIN_ID || '11155111',
+    rpcUrl: process.env.BLOCKCHAIN_RPC_URL || process.env.SEPOLIA_RPC || process.env.GANACHE_RPC || 'https://ethereum-sepolia-rpc.publicnode.com',
   };
 };
 
