@@ -814,25 +814,42 @@ const AdminDashboard = () => {
                       <Building2 size={24} color="#94A3B8" style={{ margin: '0 auto 6px' }} />
                       <div style={{ fontSize: 12, fontWeight: 700, color: '#475569' }}>No Hospital Accounts Configured</div>
                       <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>Click 'Provision' to add your first authorized partner center.</div>
+                      <button
+                        onClick={() => setShowCreateHospitalModal(true)}
+                        style={{
+                          marginTop: 10, background: '#0284C7', color: '#FFFFFF', border: 'none',
+                          borderRadius: 6, padding: '6px 12px', fontSize: 11, fontWeight: 700,
+                          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4
+                        }}
+                      >
+                        <Plus size={13} />
+                        <span>Provision Hospital Account</span>
+                      </button>
                     </div>
                   ) : (
-                    hospitalsList.slice(0, 4).map(h => {
-                      const hReqs = emergencyRequests.filter(r => (r.hospitalName || '').toLowerCase().includes((h.name || '').toLowerCase()));
+                    hospitalsList.map(h => {
+                      const hReqs = emergencyRequests.filter(r =>
+                        (r.hospitalId && (r.hospitalId === h._id || r.hospitalId.toString() === (h._id || '').toString())) ||
+                        (r.hospitalName && r.hospitalName.toLowerCase().trim() === (h.name || '').toLowerCase().trim())
+                      );
                       const activeReqs = hReqs.filter(r => r.status === 'open' || r.status === 'matched');
+                      const issuedReqs = hReqs.filter(r => r.status === 'issued');
+
                       return (
                         <div
                           key={h._id}
                           style={{
                             background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8,
-                            padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6,
+                            padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8,
+                            transition: 'all 0.15s ease',
                           }}
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                             <div>
                               <div style={{ fontSize: 13, fontWeight: 800, color: '#0F172A' }}>{h.name}</div>
-                              <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4, marginTop: 1 }}>
+                              <div style={{ fontSize: 11, color: '#64748B', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
                                 <MapPin size={11} color="#64748B" />
-                                <span>{h.district || 'Hassan'}, {h.state || 'Karnataka'} - {h.pincode || '573201'}</span>
+                                <span>{h.address || h.district || 'Hassan'}, {h.state || 'Karnataka'} - {h.pincode || '573201'}</span>
                               </div>
                             </div>
 
@@ -845,14 +862,38 @@ const AdminDashboard = () => {
                             </span>
                           </div>
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4, borderTop: '1px dashed #E2E8F0', fontSize: 11 }}>
-                            <div style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 6, borderTop: '1px dashed #E2E8F0', fontSize: 11 }}>
+                            <div style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: 6 }}>
                               <Phone size={11} color="#0284C7" />
-                              <span>{h.phone || h.email}</span>
+                              <a href={`tel:${h.phone || ''}`} style={{ color: '#0284C7', textDecoration: 'none', fontWeight: 600 }}>
+                                {h.phone || 'No phone'}
+                              </a>
+                              <span style={{ color: '#CBD5E1' }}>•</span>
+                              <span style={{ color: '#64748B', fontFamily: 'monospace' }}>{h.email}</span>
                             </div>
 
-                            <div style={{ fontWeight: 700, color: activeReqs.length > 0 ? '#DC2626' : '#059669' }}>
-                              {activeReqs.length > 0 ? `${activeReqs.length} Active Urgent Demand` : 'All Demands Cleared'}
+                            <div>
+                              {activeReqs.length > 0 ? (
+                                <button
+                                  onClick={() => setMainNav('requests')}
+                                  style={{
+                                    background: '#FEF2F2', border: '1px solid #FECACA',
+                                    color: '#DC2626', borderRadius: 6, padding: '2px 8px',
+                                    fontSize: 10, fontWeight: 800, cursor: 'pointer',
+                                    display: 'inline-flex', alignItems: 'center', gap: 4
+                                  }}
+                                  title="Click to view and fulfill requests in Hospital Requests tab"
+                                >
+                                  <AlertCircle size={10} color="#DC2626" />
+                                  <span>{activeReqs.length} Active {activeReqs.length === 1 ? 'Demand' : 'Demands'}</span>
+                                  <ArrowUpRight size={10} />
+                                </button>
+                              ) : (
+                                <span style={{ color: '#059669', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10 }}>
+                                  <CheckCircle2 size={11} color="#059669" />
+                                  <span>{issuedReqs.length > 0 ? `${issuedReqs.length} Transfused` : 'All Demands Cleared'}</span>
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -1734,6 +1775,7 @@ const AdminDashboard = () => {
           onDone={(data) => {
             setShowCreateHospitalModal(false);
             loadHospitals();
+            loadData();
             showToast(`Hospital account '${data.hospital.name}' created successfully!`);
           }}
           onError={(err) => showToast(err, 'error')}
