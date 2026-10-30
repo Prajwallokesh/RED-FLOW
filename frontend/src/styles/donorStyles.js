@@ -6,12 +6,14 @@ export const donorStyles = {
   shell: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '100vh',
+    height: '100dvh',
+    maxHeight: '100dvh',
     width: '100%',
     maxWidth: 520,
     margin: '0 auto',
     background: '#F4F6F9',
     position: 'relative',
+    overflow: 'hidden',
     boxShadow: '0 0 25px rgba(0,0,0,0.08)',
   },
 
@@ -23,7 +25,10 @@ export const donorStyles = {
     height: 60,
     background: '#172B4D',
     flexShrink: 0,
-    zIndex: 10,
+    position: 'sticky',
+    top: 0,
+    zIndex: 40,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
   },
   appLogo:  { height: 32, width: 32, objectFit: 'contain' },
   appBrand: { fontSize: 20, fontWeight: 800, letterSpacing: 0.2 },
@@ -34,7 +39,14 @@ export const donorStyles = {
     fontSize: 14, fontWeight: 700,
   },
 
-  body: { flex: 1, overflowY: 'auto', overscrollBehavior: 'contain' },
+  body: {
+    flex: 1,
+    overflowY: 'auto',
+    overscrollBehavior: 'contain',
+    WebkitOverflowScrolling: 'touch',
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
   tabContent: {
     padding: '14px 14px 20px',

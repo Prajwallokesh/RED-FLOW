@@ -22,11 +22,94 @@ import {
   RefreshCw,
   Heart,
   PhoneCall,
+  Phone,
+  Sparkles,
+  Lightbulb,
+  Share2,
+  ExternalLink,
+  ShieldAlert,
+  ArrowRight,
   Check,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import logo from '../assets/logo.png';
+
+/* ── Clinically Verified Blood Tips & Quotes ─────────────────────── */
+const BLOOD_INSIGHTS = [
+  {
+    id: 1,
+    category: 'Life Saver',
+    badgeColor: '#DC2626',
+    title: '1 Whole Blood Unit = Up to 3 Lives Saved',
+    fact: 'A single 450ml donation can be separated into Red Blood Cells, Platelets, and Fresh Plasma to treat trauma, cancer, and surgery patients.',
+    quote: '“To give blood is to give another birthday, another anniversary, another day at the park.”',
+    author: 'World Health Organization'
+  },
+  {
+    id: 2,
+    category: 'Donor Health',
+    badgeColor: '#059669',
+    title: 'Regulates Body Iron & Supports Heart Health',
+    fact: 'Regular blood donation helps shed excess iron stores from blood vessels, reducing oxidative stress and lowering arterial plaque risks.',
+    quote: '“Blood donation is not just giving life to someone else; it rejuvenates your own cardiovascular vitality.”',
+    author: 'Clinical Hematology Insights'
+  },
+  {
+    id: 3,
+    category: 'Preparation Tip',
+    badgeColor: '#0284C7',
+    title: 'Pre-Donation Hydration is Crucial',
+    fact: 'Drinking 500ml of clean water 30 minutes before donating keeps your blood pressure optimal and cuts post-donation dizziness by 90%.',
+    quote: '“Hydrated donors experience faster collection times and immediate, smooth energy recovery.”',
+    author: 'National Blood Transfusion Guidelines'
+  },
+  {
+    id: 4,
+    category: 'Biological Science',
+    badgeColor: '#7C3AED',
+    title: 'The 90-Day Natural Regeneration Cycle',
+    fact: 'Your plasma fluid volume replaces itself within 48 hours, while your red blood cells fully renew in 4–8 weeks. Waiting 90 days keeps hemoglobin peak.',
+    quote: '“Your body creates roughly 2 million new, robust red blood cells every single second.”',
+    author: 'Human Physiology Fact'
+  },
+  {
+    id: 5,
+    category: 'Emergency Lifeline',
+    badgeColor: '#D97706',
+    title: 'O-Negative: The Universal Life Guardian',
+    fact: 'Only ~7% of people have O-Negative blood. Because O- red cells carry no A, B, or Rh antigens, they can be given to ANY emergency patient immediately.',
+    quote: '“O-Negative donors are the quiet guardians of emergency trauma centers worldwide.”',
+    author: 'Emergency Trauma Network'
+  },
+  {
+    id: 6,
+    category: 'Plasma Superpower',
+    badgeColor: '#2563EB',
+    title: 'AB-Positive: Universal Plasma Champion',
+    fact: 'While O- is universal for red cells, AB-Positive is the Universal Plasma Donor! Their plasma is safe for any patient suffering from burns or severe trauma.',
+    quote: '“Every blood group has a unique superpower in emergency medicine.”',
+    author: 'RedFlow Clinical Advisory'
+  },
+  {
+    id: 7,
+    category: 'Shelf Life',
+    badgeColor: '#DC2626',
+    title: 'Platelets Expire in Just 5 Days',
+    fact: 'Unlike frozen plasma stored for months, platelets expire in just 5 days at room temperature. This is why regular voluntary donations are essential 365 days a year.',
+    quote: '“The need for blood is constant. The supply depends entirely on people like you.”',
+    author: 'Red Cross Society'
+  },
+  {
+    id: 8,
+    category: 'Inspiration',
+    badgeColor: '#E11D48',
+    title: 'Heroes Walk Among Us Every Day',
+    fact: 'Over 12,000 blood donations are needed in India every single day. A single voluntary act turns an ordinary day into a life-saving miracle.',
+    quote: '“You don’t have to be a doctor or wear a cape to save human lives. Just roll up your sleeve.”',
+    author: 'RedFlow Donor Community'
+  }
+];
 
 /* ── Status Pill ─────────────────────────────────────────────────── */
 const StatusPill = ({ status }) => {
@@ -85,6 +168,10 @@ const DonorDashboard = () => {
   const [donations, setDonations]     = useState([]);
   const [eligibility, setEligibility] = useState(null);
   const [showEligModal, setShowEligModal] = useState(false);
+  const [showEmergencyModal, setShowEmergencyModal] = useState(false);
+  const [showTipModal, setShowTipModal]             = useState(false);
+  const [tipIndex, setTipIndex]                     = useState(0);
+  const [copiedTip, setCopiedTip]                   = useState(false);
   const [loading, setLoading]         = useState(true);
   const [isSyncing, setIsSyncing]     = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(new Date());
@@ -375,6 +462,54 @@ const DonorDashboard = () => {
         </div>
       )}
 
+      {/* ── Daily Blood Insight Snippet Card ── */}
+      <div
+        onClick={() => setShowTipModal(true)}
+        style={{
+          background: 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)',
+          border: '1.5px solid #E9D5FF',
+          borderRadius: 14,
+          padding: '12px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          boxShadow: '0 2px 10px rgba(124, 58, 237, 0.06)',
+          cursor: 'pointer',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+        }}
+        title="Tap to read blood tips and donor insights"
+      >
+        <div style={{
+          width: 36, height: 36, borderRadius: 10,
+          background: '#7C3AED', color: '#FFFFFF',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0, boxShadow: '0 2px 6px rgba(124, 58, 237, 0.3)',
+        }}>
+          <Lightbulb size={20} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{
+              fontSize: 10, fontWeight: 800, color: '#7C3AED',
+              textTransform: 'uppercase', letterSpacing: 0.5,
+              background: '#FFFFFF', padding: '1px 6px', borderRadius: 4,
+            }}>
+              💡 Daily Blood Insight
+            </span>
+            <span style={{ fontSize: 11, color: '#7C3AED', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+              <span>Read Tips</span>
+              <ChevronRight size={12} />
+            </span>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 800, color: '#1E1B4B', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {BLOOD_INSIGHTS[tipIndex]?.title}
+          </div>
+          <div style={{ fontSize: 11, color: '#581C87', marginTop: 2, lineHeight: 1.3, fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            {BLOOD_INSIGHTS[tipIndex]?.quote}
+          </div>
+        </div>
+      </div>
+
       {/* Quick Actions */}
       <div style={S.sectionLabel}>Quick Actions</div>
       <div style={S.actionsGrid}>
@@ -382,15 +517,17 @@ const DonorDashboard = () => {
           { icon: <User size={20} />,        label: 'My Profile',      color: '#172B4D', cb: () => setTab('profile') },
           { icon: <ShieldCheck size={20} />, label: 'Check 90d Rule',  color: '#007C91', cb: () => setShowEligModal(true) },
           {
-            icon: <QrCode size={20} />,
-            label: 'Scan Blood Unit',
-            color: '#2E7D32',
-            cb: () => {
-              const target = bloodHistory?.[0]?.unitId || 'BU001';
-              navigate(`/verify/${target}`);
-            }
+            icon: <Sparkles size={20} />,
+            label: 'Quick Tip',
+            color: '#7C3AED',
+            cb: () => setShowTipModal(true),
           },
-          { icon: <AlertCircle size={20} />, label: 'Emergency Help',  color: '#D32F2F', cb: () => setTab('alerts') },
+          {
+            icon: <PhoneCall size={20} />,
+            label: 'Emergency Help',
+            color: '#D32F2F',
+            cb: () => setShowEmergencyModal(true),
+          },
         ].map(a => (
           <button
             key={a.label}
@@ -992,6 +1129,348 @@ const DonorDashboard = () => {
               <button onClick={() => setShowEligModal(false)} style={S.modalActionBtn}>
                 Understood
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Emergency 108 / 112 Dial & Helpline Modal ── */}
+      {showEmergencyModal && (
+        <div style={S.modalOverlay} onClick={() => setShowEmergencyModal(false)}>
+          <div style={{ ...S.modalCard, maxWidth: 390 }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              ...S.modalHeader,
+              background: '#FEF2F2',
+              borderBottom: '1px solid #FEE2E2',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 34, height: 34, borderRadius: 10,
+                  background: '#DC2626', color: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(220, 38, 38, 0.35)',
+                }}>
+                  <PhoneCall size={18} />
+                </div>
+                <div>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: '#991B1B', display: 'block', lineHeight: 1.2 }}>
+                    Emergency Helpline
+                  </span>
+                  <span style={{ fontSize: 11, color: '#DC2626', fontWeight: 600 }}>
+                    Immediate 24/7 National Dispatch
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setShowEmergencyModal(false)} style={S.modalCloseBtn}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{
+                background: '#FFF5F5',
+                border: '1px solid #FED7D7',
+                borderRadius: 10,
+                padding: '10px 12px',
+                fontSize: 12,
+                color: '#742A2A',
+                lineHeight: 1.4,
+              }}>
+                Tap any emergency service below to connect your phone dialer directly:
+              </div>
+
+              {/* 108 Ambulance */}
+              <a
+                href="tel:108"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#DC2626',
+                  color: '#FFFFFF',
+                  textDecoration: 'none',
+                  borderRadius: 12,
+                  padding: '13px 16px',
+                  boxShadow: '0 3px 10px rgba(220,38,38,0.3)',
+                  transition: 'background 0.15s ease',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <PhoneCall size={20} color="#FFFFFF" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 0.5 }}>
+                      CALL 108
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+                      Ambulance & Medical Emergency
+                    </div>
+                  </div>
+                </div>
+                <span style={{
+                  background: '#FFFFFF', color: '#DC2626',
+                  borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 800,
+                }}>
+                  DIAL NOW
+                </span>
+              </a>
+
+              {/* 112 Unified Police / Fire / Medical */}
+              <a
+                href="tel:112"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#1E293B',
+                  color: '#FFFFFF',
+                  textDecoration: 'none',
+                  borderRadius: 12,
+                  padding: '13px 16px',
+                  boxShadow: '0 2px 8px rgba(30,41,59,0.25)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <ShieldAlert size={20} color="#FFFFFF" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 900, letterSpacing: 0.5 }}>
+                      CALL 112
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.85)', fontWeight: 500 }}>
+                      National All-in-One Helpline
+                    </div>
+                  </div>
+                </div>
+                <span style={{
+                  background: '#FFFFFF', color: '#0F172A',
+                  borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 800,
+                }}>
+                  DIAL NOW
+                </span>
+              </a>
+
+              {/* 104 Blood Bank Helpline */}
+              <a
+                href="tel:104"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  background: '#047857',
+                  color: '#FFFFFF',
+                  textDecoration: 'none',
+                  borderRadius: 12,
+                  padding: '12px 16px',
+                  boxShadow: '0 2px 8px rgba(4,120,87,0.2)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 38, height: 38, borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.2)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Phone size={19} color="#FFFFFF" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, letterSpacing: 0.3 }}>
+                      CALL 104
+                    </div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.9)', fontWeight: 500 }}>
+                      Blood Bank & Health Advice
+                    </div>
+                  </div>
+                </div>
+                <span style={{
+                  background: '#FFFFFF', color: '#047857',
+                  borderRadius: 8, padding: '5px 10px', fontSize: 11, fontWeight: 800,
+                }}>
+                  DIAL NOW
+                </span>
+              </a>
+
+              {/* In-App Alerts Jump */}
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEmergencyModal(false);
+                  setTab('alerts');
+                }}
+                style={{
+                  background: '#F8FAFC',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: 10,
+                  padding: '10px 14px',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: '#0F172A',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
+                  marginTop: 2,
+                }}
+              >
+                <Bell size={15} color="#DC2626" />
+                <span>View Hospital Blood Requisitions in Alerts</span>
+                <ChevronRight size={14} color="#64748B" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Quick Tip & Blood Insights Modal ── */}
+      {showTipModal && (
+        <div style={S.modalOverlay} onClick={() => setShowTipModal(false)}>
+          <div style={{ ...S.modalCard, maxWidth: 410 }} onClick={e => e.stopPropagation()}>
+            <div style={{
+              ...S.modalHeader,
+              background: '#FAF5FF',
+              borderBottom: '1px solid #F3E8FF',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 34, height: 34, borderRadius: 10,
+                  background: '#7C3AED', color: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 6px rgba(124, 58, 237, 0.3)',
+                }}>
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: '#581C87', display: 'block', lineHeight: 1.2 }}>
+                    Blood Tips & Insights
+                  </span>
+                  <span style={{ fontSize: 11, color: '#7C3AED', fontWeight: 600 }}>
+                    Clinical Facts & Donor Science
+                  </span>
+                </div>
+              </div>
+              <button onClick={() => setShowTipModal(false)} style={S.modalCloseBtn}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '18px 16px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {/* Category Pill */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{
+                  background: `${BLOOD_INSIGHTS[tipIndex]?.badgeColor}15`,
+                  color: BLOOD_INSIGHTS[tipIndex]?.badgeColor,
+                  borderRadius: 100,
+                  padding: '4px 10px',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                }}>
+                  {BLOOD_INSIGHTS[tipIndex]?.category}
+                </span>
+
+                <span style={{ fontSize: 11, color: '#64748B', fontWeight: 700 }}>
+                  Tip {tipIndex + 1} of {BLOOD_INSIGHTS.length}
+                </span>
+              </div>
+
+              {/* Title & Fact */}
+              <div>
+                <h3 style={{ fontSize: 16, fontWeight: 900, color: '#0F172A', margin: '0 0 6px 0', lineHeight: 1.3 }}>
+                  {BLOOD_INSIGHTS[tipIndex]?.title}
+                </h3>
+                <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, margin: 0 }}>
+                  {BLOOD_INSIGHTS[tipIndex]?.fact}
+                </p>
+              </div>
+
+              {/* Inspiring Quote Box */}
+              <div style={{
+                background: '#F8FAFC',
+                borderLeft: `4px solid ${BLOOD_INSIGHTS[tipIndex]?.badgeColor || '#7C3AED'}`,
+                borderRadius: '0 10px 10px 0',
+                padding: '12px 14px',
+                fontStyle: 'italic',
+                color: '#1E293B',
+                fontSize: 13,
+                lineHeight: 1.45,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}>
+                <div style={{ fontWeight: 600, color: '#334155' }}>
+                  {BLOOD_INSIGHTS[tipIndex]?.quote}
+                </div>
+                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4, fontStyle: 'normal', fontWeight: 700 }}>
+                  — {BLOOD_INSIGHTS[tipIndex]?.author}
+                </div>
+              </div>
+
+              {/* Navigation Controls */}
+              <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const text = `${BLOOD_INSIGHTS[tipIndex]?.title}\n\n${BLOOD_INSIGHTS[tipIndex]?.quote} — RedFlow`;
+                    navigator.clipboard?.writeText(text);
+                    setCopiedTip(true);
+                    setTimeout(() => setCopiedTip(false), 2000);
+                  }}
+                  style={{
+                    flex: 1,
+                    background: '#F1F5F9',
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 10,
+                    padding: '11px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    color: '#334155',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                  }}
+                >
+                  {copiedTip ? <Check size={15} color="#059669" /> : <Share2 size={15} color="#475569" />}
+                  <span>{copiedTip ? 'Copied!' : 'Share Quote'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTipIndex((prev) => (prev + 1) % BLOOD_INSIGHTS.length);
+                  }}
+                  style={{
+                    flex: 1.4,
+                    background: '#7C3AED',
+                    border: 'none',
+                    borderRadius: 10,
+                    padding: '11px',
+                    fontSize: 13,
+                    fontWeight: 800,
+                    color: '#FFFFFF',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    boxShadow: '0 2px 8px rgba(124, 58, 237, 0.3)',
+                  }}
+                >
+                  <span>Next Insight</span>
+                  <ArrowRight size={15} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
