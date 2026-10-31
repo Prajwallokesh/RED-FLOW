@@ -28,7 +28,12 @@ import {
   Phone,
   Building2,
   ShieldAlert,
-  Thermometer
+  Thermometer,
+  GraduationCap,
+  Calendar,
+  Search,
+  PhoneCall,
+  Award
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
@@ -101,6 +106,35 @@ const AdminDashboard = () => {
   const [nearbyDonors, setNearbyDonors] = useState([]);
   const [searchingNearby, setSearchingNearby] = useState(false);
 
+  // Youth Movement Camp Registrations State
+  const [campRegistrations, setCampRegistrations] = useState([]);
+  const [campBloodFilter, setCampBloodFilter] = useState('ALL');
+  const [campStatusFilter, setCampStatusFilter] = useState('ALL');
+  const [campSearch, setCampSearch] = useState('');
+  const [updatingCampId, setUpdatingCampId] = useState(null);
+
+  const loadCampRegistrations = useCallback(async () => {
+    try {
+      const res = await api.get('/camps/registrations');
+      setCampRegistrations(res.data.registrations || []);
+    } catch (e) {
+      console.error('Camp registrations error:', e);
+    }
+  }, []);
+
+  const handleUpdateCampStatus = async (id, status) => {
+    setUpdatingCampId(id);
+    try {
+      await api.put(`/camps/registrations/${id}/status`, { status });
+      showToast(`Registrant marked as ${status.toUpperCase()}!`);
+      setCampRegistrations(prev => prev.map(r => r._id === id ? { ...r, status } : r));
+    } catch (e) {
+      showToast(e.response?.data?.error || 'Failed to update status', 'error');
+    } finally {
+      setUpdatingCampId(null);
+    }
+  };
+
   // Hospital Accounts State
   const [hospitalsList, setHospitalsList] = useState([]);
   const [showCreateHospitalModal, setShowCreateHospitalModal] = useState(false);
@@ -145,7 +179,7 @@ const AdminDashboard = () => {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [pendingRes, allDonorsRes, unitsRes, reqsRes, statsRes, bcRes, hospRes] = await Promise.all([
+      const [pendingRes, allDonorsRes, unitsRes, reqsRes, statsRes, bcRes, hospRes, campRes] = await Promise.all([
         api.get('/donors/pending'),
         api.get('/donors'),
         api.get('/blood-units'),
@@ -153,6 +187,7 @@ const AdminDashboard = () => {
         api.get('/dashboard/admin').catch(() => ({ data: null })),
         api.get('/blockchain/summary').catch(() => ({ data: null })),
         api.get('/auth/hospitals').catch(() => ({ data: { hospitals: [] } })),
+        api.get('/camps/registrations').catch(() => ({ data: { registrations: [] } })),
       ]);
       setPending(pendingRes.data.donors || []);
       setAllDonors(allDonorsRes.data.donors || []);
@@ -161,6 +196,7 @@ const AdminDashboard = () => {
       if (statsRes?.data) setDashboardStats(statsRes.data);
       if (bcRes?.data) setBlockchainSummary(bcRes.data);
       if (hospRes?.data?.hospitals) setHospitalsList(hospRes.data.hospitals || []);
+      if (campRes?.data?.registrations) setCampRegistrations(campRes.data.registrations || []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -181,6 +217,12 @@ const AdminDashboard = () => {
       loadHospitals();
     }
   }, [mainNav, loadHospitals]);
+
+  useEffect(() => {
+    if (mainNav === 'camps') {
+      loadCampRegistrations();
+    }
+  }, [mainNav, loadCampRegistrations]);
 
 
 
@@ -273,6 +315,20 @@ const AdminDashboard = () => {
     : bloodUnits.filter(u => u.availabilityStatus === unitTab);
 
   const verifiedDonors = filteredDonors.filter(d => d.isVerified && !d.isFlagged);
+
+  const displayedCampRegistrations = campRegistrations.filter(r => {
+    if (campBloodFilter !== 'ALL' && r.bloodGroup !== campBloodFilter) return false;
+    if (campStatusFilter !== 'ALL' && r.status !== campStatusFilter) return false;
+    if (campSearch.trim()) {
+      const q = campSearch.toLowerCase();
+      const matchName = r.name?.toLowerCase().includes(q);
+      const matchPhone = r.phone?.toLowerCase().includes(q);
+      const matchToken = r.registrationToken?.toLowerCase().includes(q);
+      const matchAffil = r.affiliation?.toLowerCase().includes(q);
+      if (!matchName && !matchPhone && !matchToken && !matchAffil) return false;
+    }
+    return true;
+  });
 
 
   return (
@@ -385,6 +441,17 @@ const AdminDashboard = () => {
           >
             <div style={adminStyles.navIconWrap}><MapPin size={17} /></div>
             <span style={{ flex: 1 }}>Nearby Donors (Map)</span>
+          </button>
+
+          <button
+            onClick={() => setMainNav('camps')}
+            style={{ ...adminStyles.navBtn, ...(mainNav === 'camps' ? adminStyles.navBtnActive : {}) }}
+          >
+            <div style={adminStyles.navIconWrap}><GraduationCap size={17} /></div>
+            <span style={{ flex: 1 }}>Youth Camp Registrations</span>
+            <span style={{ ...adminStyles.navBadge, background: 'rgba(124, 58, 237, 0.18)', color: '#A78BFA' }}>
+              {campRegistrations.length}
+            </span>
           </button>
 
           <div style={{ ...adminStyles.navGroupTitle, marginTop: 14 }}>SECURITY & AUDIT</div>
@@ -1764,6 +1831,360 @@ const AdminDashboard = () => {
               </table>
             </div>
 
+          </div>
+        )}
+
+        {/* ── YOUTH CAMP REGISTRATIONS VIEW ── */}
+        {mainNav === 'camps' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Top Header */}
+            <div style={{
+              background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)',
+              borderRadius: 14,
+              padding: '20px 24px',
+              color: '#FFFFFF',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: 12,
+              boxShadow: '0 4px 16px rgba(49, 46, 129, 0.2)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
+                  background: 'rgba(255,255,255,0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <GraduationCap size={24} color="#FFFFFF" />
+                </div>
+                <div>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, letterSpacing: -0.2 }}>
+                    Youth Blood Donor Movement — Camp Registrations
+                  </h2>
+                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span>Venue: <strong>GECH Auditorium, Hassan</strong></span>
+                    <span>•</span>
+                    <span>Date: <strong>09/11/2026 (9:00 AM – 4:30 PM)</strong></span>
+                    <span>•</span>
+                    <span>Clinical Partner: <strong>HIMS Blood Bank</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  type="button"
+                  onClick={loadCampRegistrations}
+                  style={{
+                    background: 'rgba(255,255,255,0.15)',
+                    border: '1px solid rgba(255,255,255,0.25)',
+                    color: '#FFFFFF',
+                    borderRadius: 9,
+                    padding: '8px 14px',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                >
+                  <RefreshCw size={13} />
+                  <span>Sync Registrations</span>
+                </button>
+              </div>
+            </div>
+
+            {/* 4 Summary Stat Cards */}
+            <div style={adminStyles.statsRow}>
+              <div style={adminStyles.statCard}>
+                <div style={{ ...adminStyles.statIconBox, background: 'rgba(124, 58, 237, 0.1)', color: '#7C3AED' }}>
+                  <Users size={20} />
+                </div>
+                <div>
+                  <div style={adminStyles.statLabel}>Total Registrants</div>
+                  <div style={{ ...adminStyles.statVal, color: '#7C3AED' }}>{campRegistrations.length}</div>
+                </div>
+              </div>
+
+              <div style={adminStyles.statCard}>
+                <div style={{ ...adminStyles.statIconBox, background: 'rgba(5, 150, 105, 0.1)', color: '#059669' }}>
+                  <CheckCircle2 size={20} />
+                </div>
+                <div>
+                  <div style={adminStyles.statLabel}>Attended Donors</div>
+                  <div style={{ ...adminStyles.statVal, color: '#059669' }}>
+                    {campRegistrations.filter(r => r.status === 'attended').length}
+                  </div>
+                </div>
+              </div>
+
+              <div style={adminStyles.statCard}>
+                <div style={{ ...adminStyles.statIconBox, background: 'rgba(217, 119, 6, 0.1)', color: '#D97706' }}>
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <div style={adminStyles.statLabel}>Pending Confirmation</div>
+                  <div style={{ ...adminStyles.statVal, color: '#D97706' }}>
+                    {campRegistrations.filter(r => r.status === 'registered').length}
+                  </div>
+                </div>
+              </div>
+
+              <div style={adminStyles.statCard}>
+                <div style={{ ...adminStyles.statIconBox, background: 'rgba(220, 38, 38, 0.1)', color: '#DC2626' }}>
+                  <Award size={20} />
+                </div>
+                <div>
+                  <div style={adminStyles.statLabel}>Target Units Goal</div>
+                  <div style={{ ...adminStyles.statVal, color: '#DC2626' }}>250+</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Search & Filter Toolbar */}
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: 12,
+              padding: '14px 18px',
+              border: '1px solid #E2E8F0',
+              display: 'flex',
+              gap: 12,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 260 }}>
+                <Search size={16} color="#64748B" />
+                <input
+                  type="text"
+                  value={campSearch}
+                  onChange={(e) => setCampSearch(e.target.value)}
+                  placeholder="Search by student name, phone, token (#GECH-CAMP-101) or college…"
+                  style={{
+                    border: '1px solid #CBD5E1',
+                    borderRadius: 8,
+                    padding: '8px 12px',
+                    fontSize: 12.5,
+                    width: '100%',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#475569' }}>
+                  <span>Blood:</span>
+                  <select
+                    value={campBloodFilter}
+                    onChange={(e) => setCampBloodFilter(e.target.value)}
+                    style={{
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 8,
+                      padding: '7px 10px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      background: '#FFFFFF',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="ALL">All Groups</option>
+                    {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'].map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#475569' }}>
+                  <span>Status:</span>
+                  <select
+                    value={campStatusFilter}
+                    onChange={(e) => setCampStatusFilter(e.target.value)}
+                    style={{
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 8,
+                      padding: '7px 10px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      background: '#FFFFFF',
+                      outline: 'none'
+                    }}
+                  >
+                    <option value="ALL">All Statuses</option>
+                    <option value="registered">Registered</option>
+                    <option value="attended">Attended</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Registrations Table */}
+            <div style={adminStyles.tableCard}>
+              <table style={adminStyles.table}>
+                <thead>
+                  <tr style={adminStyles.tableHeadRow}>
+                    <th style={adminStyles.th}>Token</th>
+                    <th style={adminStyles.th}>Youth Registrant</th>
+                    <th style={adminStyles.th}>Blood Group</th>
+                    <th style={adminStyles.th}>Contact & WhatsApp</th>
+                    <th style={adminStyles.th}>Affiliation / College</th>
+                    <th style={adminStyles.th}>Registered At</th>
+                    <th style={adminStyles.th}>Attendance Status</th>
+                    <th style={{ ...adminStyles.th, textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {displayedCampRegistrations.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} style={{ padding: 32, textAlign: 'center', color: '#6C757D' }}>
+                        No camp registrations match your search criteria.
+                      </td>
+                    </tr>
+                  ) : (
+                    displayedCampRegistrations.map((r) => {
+                      const cleanPhone = (r.phone || '').replace(/\D/g, '');
+                      return (
+                        <tr key={r._id} style={adminStyles.tableRow}>
+                          <td style={{ ...adminStyles.td, fontFamily: 'monospace', fontWeight: 800, color: '#7C3AED' }}>
+                            {r.registrationToken || 'GECH-CAMP'}
+                          </td>
+                          <td style={{ ...adminStyles.td, fontWeight: 800, color: '#0F172A' }}>
+                            {r.name}
+                          </td>
+                          <td style={adminStyles.td}>
+                            <span style={{
+                              background: '#FEE2E2',
+                              color: '#DC2626',
+                              borderRadius: 100,
+                              padding: '2px 9px',
+                              fontSize: 11,
+                              fontWeight: 800
+                            }}>
+                              {r.bloodGroup}
+                            </span>
+                          </td>
+                          <td style={adminStyles.td}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                              <span style={{ fontFamily: 'monospace', fontSize: 12, color: '#334155' }}>
+                                {r.phone}
+                              </span>
+                              {cleanPhone && (
+                                <a
+                                  href={`https://wa.me/91${cleanPhone}?text=Hi%20${encodeURIComponent(r.name)},%20this%20is%20RedFlow%20confirming%20your%20registration%20for%20the%20Blood%20Donation%20Movement%20at%20GECH%20Hassan%20on%2009/11/2026!`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  style={{
+                                    background: '#DCFCE7',
+                                    color: '#15803D',
+                                    padding: '2px 6px',
+                                    borderRadius: 4,
+                                    fontSize: 10,
+                                    fontWeight: 700,
+                                    textDecoration: 'none'
+                                  }}
+                                  title="Chat on WhatsApp"
+                                >
+                                  WhatsApp
+                                </a>
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ ...adminStyles.td, fontSize: 12, color: '#475569' }}>
+                            {r.affiliation || 'GECH Student / Faculty'}
+                          </td>
+                          <td style={{ ...adminStyles.td, fontSize: 11.5, color: '#64748B' }}>
+                            {new Date(r.createdAt || Date.now()).toLocaleDateString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric'
+                            })}
+                          </td>
+                          <td style={adminStyles.td}>
+                            <span style={{
+                              background: r.status === 'attended'
+                                ? '#ECFDF5'
+                                : r.status === 'cancelled'
+                                  ? '#FEF2F2'
+                                  : '#EFF6FF',
+                              color: r.status === 'attended'
+                                ? '#059669'
+                                : r.status === 'cancelled'
+                                  ? '#DC2626'
+                                  : '#2563EB',
+                              border: `1px solid ${
+                                r.status === 'attended'
+                                  ? '#A7F3D0'
+                                  : r.status === 'cancelled'
+                                    ? '#FECDD3'
+                                    : '#BFDBFE'
+                              }`,
+                              borderRadius: 6,
+                              padding: '2px 8px',
+                              fontSize: 10.5,
+                              fontWeight: 800,
+                              textTransform: 'uppercase'
+                            }}>
+                              {r.status || 'registered'}
+                            </span>
+                          </td>
+                          <td style={{ ...adminStyles.td, textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 6 }}>
+                              {r.status !== 'attended' && (
+                                <button
+                                  type="button"
+                                  disabled={updatingCampId === r._id}
+                                  onClick={() => handleUpdateCampStatus(r._id, 'attended')}
+                                  style={{
+                                    background: '#059669',
+                                    border: 'none',
+                                    color: '#FFFFFF',
+                                    borderRadius: 6,
+                                    padding: '4px 8px',
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                  }}
+                                  title="Mark as Attended"
+                                >
+                                  Mark Attended
+                                </button>
+                              )}
+                              {r.status !== 'cancelled' && (
+                                <button
+                                  type="button"
+                                  disabled={updatingCampId === r._id}
+                                  onClick={() => handleUpdateCampStatus(r._id, 'cancelled')}
+                                  style={{
+                                    background: '#F1F5F9',
+                                    border: '1px solid #CBD5E1',
+                                    color: '#64748B',
+                                    borderRadius: 6,
+                                    padding: '4px 8px',
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                  }}
+                                  title="Mark Cancelled"
+                                >
+                                  Cancel
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </main>

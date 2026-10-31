@@ -22,6 +22,7 @@ app.use('/api/donor-search', require('./routes/donorSearch'));
 app.use('/api/dashboard',    require('./routes/dashboard'));
 app.use('/api/blockchain',   require('./routes/blockchain'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/camps',         require('./routes/camps'));
 
 // Health check
 app.get('/api/health', (req, res) => {

@@ -30,10 +30,12 @@ import {
   ShieldAlert,
   ArrowRight,
   Check,
+  GraduationCap,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import logo from '../assets/logo.png';
+import OfficialDonationCertificate from '../components/OfficialDonationCertificate';
 
 /* ── Clinically Verified Blood Insights (Concise 1-2 lines, No Emojis) ── */
 const BLOOD_INSIGHTS = [
@@ -258,6 +260,9 @@ const DonorDashboard = () => {
     return nextDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
   })();
 
+  /* Has completed at least 1 donation */
+  const hasDonated = (donor?.donationCount > 0) || (donations && donations.length > 0);
+
   /* ── HOME ──────────────────────────────────────────────────────── */
   const HomeTab = () => (
     <div style={S.tabContent}>
@@ -400,62 +405,17 @@ const DonorDashboard = () => {
         </div>
       )}
 
-      {/* ── Daily Blood Insight Snippet Card (1-2 lines, No Emojis, Auto-selected) ── */}
-      <div
-        onClick={() => setShowTipModal(true)}
-        style={{
-          background: 'linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%)',
-          border: '1.5px solid #E9D5FF',
-          borderRadius: 14,
-          padding: '12px 14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          boxShadow: '0 2px 10px rgba(124, 58, 237, 0.06)',
-          cursor: 'pointer',
-          transition: 'transform 0.15s ease, box-shadow 0.15s ease',
-        }}
-        title="Tap to view full blood insight"
-      >
-        <div style={{
-          width: 36, height: 36, borderRadius: 10,
-          background: '#7C3AED', color: '#FFFFFF',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          flexShrink: 0, boxShadow: '0 2px 6px rgba(124, 58, 237, 0.3)',
-        }}>
-          <Lightbulb size={20} />
+      {/* ── Official Voluntary Donation Certificate (Shown in Place of Blood Insight Row After 1 Donation) ── */}
+      {hasDonated && (
+        <div style={{ marginBottom: 18 }}>
+          <OfficialDonationCertificate
+            donorName={donor?.name || user?.name || 'Prajwal Lokesh'}
+            certificateNo={donations[0]?.unitId ? `RF-2026-${donations[0].unitId}` : 'RF-2026-0001'}
+            issueDate={donations[0]?.collectionDate ? new Date(donations[0].collectionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '15 Oct 2026'}
+            txHash={donor?.blockchainTxHash}
+          />
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{
-              fontSize: 10, fontWeight: 800, color: '#7C3AED',
-              textTransform: 'uppercase', letterSpacing: 0.5,
-              background: '#FFFFFF', padding: '2px 7px', borderRadius: 4,
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-            }}>
-              <Sparkles size={11} color="#7C3AED" />
-              <span>Blood Insight</span>
-            </span>
-            <span style={{ fontSize: 11, color: '#7C3AED', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-              <span>View</span>
-              <ChevronRight size={12} />
-            </span>
-          </div>
-          <div style={{
-            fontSize: 12.5,
-            fontWeight: 600,
-            color: '#1E1B4B',
-            marginTop: 4,
-            lineHeight: 1.4,
-            display: '-webkit-box',
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-          }}>
-            {BLOOD_INSIGHTS[tipIndex]}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Quick Actions */}
       <div style={S.sectionLabel}>Quick Actions</div>
@@ -464,10 +424,13 @@ const DonorDashboard = () => {
           { icon: <User size={20} />,        label: 'My Profile',      color: '#172B4D', cb: () => setTab('profile') },
           { icon: <ShieldCheck size={20} />, label: 'Check 90d Rule',  color: '#007C91', cb: () => setShowEligModal(true) },
           {
-            icon: <Sparkles size={20} />,
-            label: 'Quick Tip',
+            icon: <GraduationCap size={20} />,
+            label: 'Donation Camp',
             color: '#7C3AED',
-            cb: () => setShowTipModal(true),
+            cb: () => {
+              navigate('/youth-camp');
+              window.scrollTo(0, 0);
+            },
           },
           {
             icon: <PhoneCall size={20} />,
@@ -478,6 +441,7 @@ const DonorDashboard = () => {
         ].map(a => (
           <button
             key={a.label}
+            type="button"
             onClick={a.cb}
             style={{ ...S.actionBtn, borderColor: `${a.color}25` }}
           >

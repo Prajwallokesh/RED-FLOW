@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, ShieldCheck, ArrowRight, Zap, PhoneCall, LogIn } from 'lucide-react';
+import {
+  Heart,
+  ShieldCheck,
+  ArrowRight,
+  Zap,
+  PhoneCall,
+  LogIn,
+  Award,
+  GraduationCap,
+  Building2,
+  Activity,
+  CheckCircle2,
+  Sparkles,
+  Users,
+  QrCode,
+  FileCheck,
+  Droplet
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import ScrollableBloodDrop from '../components/ScrollableBloodDrop';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -26,22 +44,28 @@ const BLOOD_COMPATIBILITY = [
  * ─────────────────────────────────────────────────────────────────────────────
  * HOME PAGE COMPONENT
  * Purpose: The public welcome portal for RedFlow.
- * Provides easy donor onboarding, emergency contacts, and blood education.
+ * Provides easy donor onboarding, blood shortage awareness, youth movement,
+ * verified certificates, emergency contacts, and clinical compatibility guide.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 const Home = () => {
-  // Access global authentication state to know if user is already logged in
   const { isAuthenticated, user } = useAuth();
+  const shortageSectionRef = useRef(null);
+  const youthSectionRef = useRef(null);
 
   /**
    * Helper: Automatically routes a logged-in user to their respective dashboard
-   * (Admin -> /admin, Hospital -> /hospital, Donor -> /donor)
    */
   const getDashboardPath = () => {
     if (!user) return '/login';
     if (user.role === 'admin') return '/admin';
     if (user.role === 'hospital') return '/hospital';
     return '/donor';
+  };
+
+  const scrollToYouth = (e) => {
+    e.preventDefault();
+    youthSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -88,7 +112,84 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 2. THREE-STEP WORKFLOW: How the System Operates ── */}
+      {/* ── 2. SECTION: INDIA'S BLOOD SHORTAGE & SCROLLABLE LIQUID BLOOD DROPLET ── */}
+      <section className="rf-shortage-section" ref={shortageSectionRef}>
+        <div className="rf-new-container">
+          <div className="rf-shortage-grid">
+            {/* Pure Scroll-Reactive Blood Droplet Illustration */}
+            <ScrollableBloodDrop containerRef={shortageSectionRef} />
+
+            {/* Editorial Content Matching Reference */}
+            <div className="rf-shortage-content">
+              <h2 className="rf-shortage-title">
+                India Faces a Shortage of <span style={{ color: '#DC2626' }}>2 Million Units</span> of Blood
+              </h2>
+
+              <p className="rf-shortage-desc">
+                India requires approximately 15 million units of blood each year, yet only 13 million are collected. Just 2% of India's youth donating regularly would be enough to bridge this gap entirely.
+              </p>
+
+              {/* Action Button: Rectangular Red KNOW MORE */}
+              <div style={{ marginTop: 8 }}>
+                <Link to="/youth-camp" className="rf-btn-know-more">
+                  KNOW MORE
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3. SECTION: WE, THE YOUTH, CAN MAKE INDIA BLOOD-SUFFICIENT ── */}
+      <section className="rf-youth-section" id="youth-movement" ref={youthSectionRef}>
+        <div className="rf-new-container">
+          <div className="rf-youth-clean-wrapper">
+            <h2 className="rf-youth-title">
+              We, the youth, can make <span style={{ color: '#DC2626' }}>India Blood Sufficient</span>
+            </h2>
+            <p className="rf-youth-editorial-text">
+              RedFlow Youth Movement is India's largest youth-driven organization working alongside colleges, corporates, and Resident Welfare Associations (RWAs) to help blood banks maintain adequate supplies. We offer a 360° solution, from inspiring people to donate blood to facilitating donation through organized camps.
+            </p>
+
+            {/* Featured Camp Banner: GECH Hassan */}
+            <div className="rf-youth-camp-callout">
+              <div className="rf-youth-camp-callout-info">
+                <div className="rf-camp-tag-chip">UPCOMING YOUTH DONOR MOVEMENT</div>
+                <div className="rf-youth-camp-callout-title">
+                  Government Engineering College, Hassan (GECH)
+                </div>
+                <div className="rf-youth-camp-callout-date" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div>Time: 9:00 AM – 4:30 PM IST</div>
+                  <div>Date: 9/11/2026 (November 9, 2026)</div>
+                </div>
+              </div>
+              <Link to="/youth-camp" className="rf-btn-camp-cta">
+                <span>View Movement Details</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. SECTION: OFFICIAL VOLUNTARY RECOGNITION (INFORMATIONAL) ── */}
+      <section className="rf-certificate-section">
+        <div className="rf-new-container">
+          <div className="rf-title-center" style={{ maxWidth: 760, margin: '0 auto' }}>
+            <span className="rf-section-badge" style={{ background: '#FEF3C7', color: '#92400E', borderColor: '#FDE68A' }}>
+              OFFICIAL VOLUNTARY RECOGNITION
+            </span>
+            <h2 className="rf-sec-heading">
+              Earn an Official <span style={{ color: '#D97706' }}>Donation Certificate</span> with Blockchain Proof
+            </h2>
+            <p className="rf-sec-sub">
+              Every voluntary blood donation through RedFlow is rewarded with verified academic and professional recognition, anchored to the Ethereum Sepolia blockchain for college NSS credits, verified community service, and permanent cryptographic proof.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. THREE-STEP WORKFLOW: How the System Operates ── */}
       <section className="rf-how-section">
         <div className="rf-new-container">
           <div className="rf-title-center">
@@ -145,7 +246,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 3. CLINICAL COMPATIBILITY GUIDE: Education for Donors & Staff ── */}
+      {/* ── 6. CLINICAL COMPATIBILITY GUIDE: Education for Donors & Staff ── */}
       <section className="rf-matrix-section">
         <div className="rf-new-container">
           <div className="rf-title-center">
@@ -195,7 +296,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 4. 24/7 EMERGENCY HELPLINE CALLOUT ── */}
+      {/* ── 7. 24/7 EMERGENCY HELPLINE CALLOUT ── */}
       <section className="rf-helpline-section">
         <div className="rf-new-container">
           <div className="rf-helpline-card">
@@ -228,7 +329,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 5. APPLICATION FOOTER ── */}
+      {/* ── 8. APPLICATION FOOTER ── */}
       <footer className="rf-new-footer">
         <div className="rf-footer-wrap">
           <div>
