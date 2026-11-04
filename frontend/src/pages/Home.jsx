@@ -116,14 +116,15 @@ const Home = () => {
       <section className="rf-shortage-section" ref={shortageSectionRef}>
         <div className="rf-new-container">
           <div className="rf-shortage-grid">
+  <h2 className="rf-shortage-title">
+                India Faces a Shortage of <span style={{ color: '#DC2626' }}>2 Million Units</span> of Blood
+              </h2>
             {/* Pure Scroll-Reactive Blood Droplet Illustration */}
             <ScrollableBloodDrop containerRef={shortageSectionRef} />
 
             {/* Editorial Content Matching Reference */}
             <div className="rf-shortage-content">
-              <h2 className="rf-shortage-title">
-                India Faces a Shortage of <span style={{ color: '#DC2626' }}>2 Million Units</span> of Blood
-              </h2>
+            
 
               <p className="rf-shortage-desc">
                 India requires approximately 15 million units of blood each year, yet only 13 million are collected. Just 2% of India's youth donating regularly would be enough to bridge this gap entirely.
