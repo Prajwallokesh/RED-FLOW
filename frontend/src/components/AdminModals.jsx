@@ -981,3 +981,253 @@ export const FlagModal = ({ donor, onClose, onDone }) => {
     </div>
   );
 };
+
+// ── 9. Post Blood Camp Modal ─────────────────────────────────────────────────
+export const PostCampModal = ({ onClose, onDone, onError }) => {
+  const [title, setTitle] = useState('');
+  const [organizer, setOrganizer] = useState('');
+  const [venue, setVenue] = useState('');
+  const [city, setCity] = useState('');
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [clinicalPartner, setClinicalPartner] = useState('');
+  const [targetUnits, setTargetUnits] = useState('');
+  const [description, setDescription] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [notifyDonors, setNotifyDonors] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) return onError('Camp title is required');
+    if (!venue.trim()) return onError('Camp venue is required');
+    if (!date.trim()) return onError('Camp date is required');
+    if (!time.trim()) return onError('Operating hours are required');
+
+    setLoading(true);
+    try {
+      const res = await api.post('/camps', {
+        title: title.trim(),
+        organizer: organizer.trim(),
+        venue: venue.trim(),
+        city: city.trim(),
+        date: date.trim(),
+        time: time.trim(),
+        clinicalPartner: clinicalPartner.trim(),
+        targetUnits: Number(targetUnits) || 250,
+        description: description.trim(),
+        contactPhone: contactPhone.trim(),
+        contactEmail: contactEmail.trim(),
+        notifyDonors,
+      });
+      onDone(res.data);
+    } catch (err) {
+      onError(err.response?.data?.error || 'Failed to post blood camp');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={adminStyles.overlay}>
+      <div style={{ ...adminStyles.modal, maxWidth: 620, maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={adminStyles.modalHeader}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0, 124, 145, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Calendar size={20} color="#007C91" />
+            </div>
+            <div>
+              <h2 style={{ ...adminStyles.modalTitle, margin: 0, fontSize: 18 }}>Post New Blood Donation Camp</h2>
+              <p style={{ fontSize: 12, color: '#64748B', margin: '2px 0 0' }}>Schedule a blood donation drive.</p>
+            </div>
+          </div>
+          <button onClick={onClose} style={adminStyles.modalCloseBtn} disabled={loading}><X size={18} /></button>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div>
+            <label style={adminStyles.inputLabel}>Camp Title / Drive Name *</label>
+            <input
+              type="text"
+              placeholder="e.g. Hassan Youth Mega Blood Donation Drive"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              style={adminStyles.input}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 12 }}>
+            <div>
+              <label style={adminStyles.inputLabel}>Organizing Committee</label>
+              <input
+                type="text"
+                placeholder="e.g. RedFlow Youth Movement & NSS"
+                value={organizer}
+                onChange={e => setOrganizer(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+            <div>
+              <label style={adminStyles.inputLabel}>Clinical Partner Blood Bank</label>
+              <input
+                type="text"
+                placeholder="e.g. HIMS Blood Bank"
+                value={clinicalPartner}
+                onChange={e => setClinicalPartner(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={adminStyles.inputLabel}>Full Venue Location *</label>
+            <input
+              type="text"
+              placeholder="e.g. GECH Auditorium, Bangalore-Mangalore Highway, Hassan"
+              value={venue}
+              onChange={e => setVenue(e.target.value)}
+              style={adminStyles.input}
+              required
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+            <div>
+              <label style={adminStyles.inputLabel}>City / District</label>
+              <input
+                type="text"
+                placeholder="e.g. Hassan"
+                value={city}
+                onChange={e => setCity(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+            <div>
+              <label style={adminStyles.inputLabel}>Event Date *</label>
+              <input
+                type="text"
+                placeholder="e.g. 09/11/2026 or Nov 9, 2026"
+                value={date}
+                onChange={e => setDate(e.target.value)}
+                style={adminStyles.input}
+                required
+              />
+            </div>
+            <div>
+              <label style={adminStyles.inputLabel}>Operating Hours *</label>
+              <input
+                type="text"
+                placeholder="e.g. 9:00 AM – 4:30 PM"
+                value={time}
+                onChange={e => setTime(e.target.value)}
+                style={adminStyles.input}
+                required
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+            <div>
+              <label style={adminStyles.inputLabel}>Target Units Goal</label>
+              <input
+                type="number"
+                min="10"
+                max="5000"
+                placeholder="e.g. 250"
+                value={targetUnits}
+                onChange={e => setTargetUnits(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+            <div>
+              <label style={adminStyles.inputLabel}>Contact Phone</label>
+              <input
+                type="text"
+                placeholder="e.g. +91 98801 23456"
+                value={contactPhone}
+                onChange={e => setContactPhone(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+            <div>
+              <label style={adminStyles.inputLabel}>Contact Email</label>
+              <input
+                type="email"
+                placeholder="e.g. youth@redflow.org"
+                value={contactEmail}
+                onChange={e => setContactEmail(e.target.value)}
+                style={adminStyles.input}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={adminStyles.inputLabel}>Camp Description</label>
+            <textarea
+              rows={2}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              style={adminStyles.textarea}
+              placeholder="Event details or donor instructions (optional)"
+            />
+          </div>
+
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '4px 0',
+          }}>
+            <input
+              type="checkbox"
+              id="notifyDonorsCamp"
+              checked={notifyDonors}
+              onChange={e => setNotifyDonors(e.target.checked)}
+              style={{ accentColor: '#007C91', width: 16, height: 16, cursor: 'pointer' }}
+            />
+            <label htmlFor="notifyDonorsCamp" style={{ fontSize: 13, color: '#334155', fontWeight: 600, cursor: 'pointer' }}>
+              Broadcast alert notification to all verified donors
+            </label>
+          </div>
+
+          <div style={adminStyles.modalBtns}>
+            <button type="button" onClick={onClose} style={adminStyles.cancelBtn} disabled={loading}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                background: '#007C91',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: 8,
+                padding: '9px 20px',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: loading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              {loading ? (
+                <>
+                  <RefreshCw size={14} className="rf-spin" />
+                  <span>Posting Camp...</span>
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 size={14} />
+                  <span>Post Blood Camp</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

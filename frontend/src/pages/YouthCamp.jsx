@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   Calendar,
   Clock,
   MapPin,
   Building2,
-  Users,
-  Award,
-  ShieldCheck,
   Heart,
   CheckCircle2,
   ArrowLeft,
   Share2,
   Check,
   PhoneCall,
+  Award,
   Activity,
-  FileCheck,
-  Sparkles
+  ShieldCheck,
+  Sparkles,
+  Users,
+  Copy,
+  ChevronRight,
+  Info,
+  AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
@@ -24,340 +27,821 @@ import logo from '../assets/logo.png';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- * YOUTH DONOR MOVEMENT & BLOOD DONATION CAMP PAGE
- * Single-page high-impact event portal for the upcoming blood donation drive
- * at Government Engineering College, Hassan on 9/11/2026.
+ * SIMPLIFIED BLOOD DONATION CAMP DETAILS & REGISTRATION
+ * Clean, modern, dedicated single-page view for upcoming blood donation drives.
+ * Donors register directly through their accounts with 1-click RSVP.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 const YouthCamp = () => {
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { campId: routeCampId } = useParams();
+  const [searchParams] = useSearchParams();
+
+  const campId = routeCampId || searchParams.get('id') || 'gech-hassan-2026';
+
+  const [camp, setCamp] = useState({
+    campId: 'gech-hassan-2026',
+    title: 'Government Engineering College, Hassan (GECH)',
+    organizer: 'RedFlow Youth Movement & NSS',
+    venue: 'GECH Auditorium, Dairy Circle, B.M. Road, Hassan, Karnataka - 573201',
+    city: 'Hassan',
+    date: '9/11/2026 (Monday, November 9, 2026)',
+    time: '9:00 AM – 4:30 PM IST',
+    clinicalPartner: 'HIMS Blood Bank',
+    targetUnits: 250,
+    registeredCount: 6,
+    description: 'Mega youth blood donation drive in association with HIMS Blood Bank. Earn official voluntary certificates with Ethereum blockchain proof.',
+    contactPhone: '+91 98801 23456',
+    contactEmail: 'youth@redflow.org',
+    status: 'upcoming'
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [donorProfile, setDonorProfile] = useState(null);
 
   // Registration state
-  const [isJoined, setIsJoined] = useState(false);
-  const [donorCount, setDonorCount] = useState(5);
-  const [donorName, setDonorName] = useState(user?.name || '');
-  const [donorPhone, setDonorPhone] = useState(user?.phone || '');
-  const [bloodGroup, setBloodGroup] = useState(user?.bloodGroup || 'O+');
-  const [affiliation, setAffiliation] = useState('GECH Student / Faculty');
-  const [registeredToken, setRegisteredToken] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registrationToken, setRegistrationToken] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [copiedShare, setCopiedShare] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(false);
 
+  // Guest inputs if not authenticated or needs edit
+  const [guestName, setGuestName] = useState(user?.name || '');
+  const [guestPhone, setGuestPhone] = useState(user?.phone || '');
+  const [guestBloodGroup, setGuestBloodGroup] = useState(user?.bloodGroup || 'O+');
+  const [showEditInputs, setShowEditInputs] = useState(false);
+
+  // 1. Fetch Camp Details
   useEffect(() => {
-    api.get('/camps/stats')
-      .then(res => {
-        if (res.data?.totalCount !== undefined) {
-          setDonorCount(res.data.totalCount);
+    let isMounted = true;
+    const fetchCamp = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get(`/camps/${campId}`);
+        if (isMounted && res.data?.camp) {
+          setCamp(res.data.camp);
         }
-      })
-      .catch(() => {});
-  }, []);
+      } catch (err) {
+        // Fallback: fetch from /camps and match
+        try {
+          const listRes = await api.get('/camps');
+          if (isMounted && listRes.data?.camps) {
+            const found = listRes.data.camps.find(c => c.campId === campId || c._id === campId);
+            if (found) setCamp(found);
+          }
+        } catch (_) {}
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
 
-  const handleJoin = async (e) => {
-    e.preventDefault();
-    if (!donorName.trim() || !donorPhone.trim()) return;
-    setLoading(true);
+    fetchCamp();
+    return () => { isMounted = false; };
+  }, [campId]);
+
+  // 2. Fetch Donor Profile if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.get('/donors/me')
+        .then(res => {
+          if (res.data?.donor) {
+            setDonorProfile(res.data.donor);
+            if (res.data.donor.phone) setGuestPhone(res.data.donor.phone);
+            if (res.data.donor.bloodGroup) setGuestBloodGroup(res.data.donor.bloodGroup);
+            if (res.data.donor.name) setGuestName(res.data.donor.name);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [isAuthenticated]);
+
+  // 3. Check if already registered locally
+  useEffect(() => {
+    const savedToken = localStorage.getItem(`rf_camp_token_${campId}`);
+    if (savedToken) {
+      setIsRegistered(true);
+      setRegistrationToken(savedToken);
+    }
+  }, [campId]);
+
+  // Handle Registration RSVP
+  const handleRegister = async (e) => {
+    if (e) e.preventDefault();
+    setIsSubmitting(true);
     setErrorMsg('');
+
+    const donorName = donorProfile?.name || user?.name || guestName;
+    const donorPhone = donorProfile?.phone || user?.phone || guestPhone;
+    const donorBlood = donorProfile?.bloodGroup || user?.bloodGroup || guestBloodGroup;
+
+    if (!donorName?.trim() || !donorPhone?.trim()) {
+      setErrorMsg('Full Name and Phone Number are required to register.');
+      setIsSubmitting(false);
+      setShowEditInputs(true);
+      return;
+    }
+
     try {
-      const res = await api.post('/camps/register', {
+      const payload = {
+        campId: camp.campId || campId,
         name: donorName.trim(),
         phone: donorPhone.trim(),
-        bloodGroup,
-        affiliation: affiliation.trim(),
         email: user?.email || '',
-      });
-      setIsJoined(true);
-      const token = res.data?.registration?.registrationToken || '#GECH-CAMP-106';
-      setRegisteredToken(token);
+        bloodGroup: donorBlood,
+        affiliation: donorProfile?.isVerified ? 'Verified Donor' : 'Voluntary Donor',
+        donorId: donorProfile?.donorId || '',
+        userId: user?.id || null,
+      };
+
+      const res = await api.post('/camps/register', payload);
+      const token = res.data?.registration?.registrationToken || '#CAMP-101';
+      setIsRegistered(true);
+      setRegistrationToken(token);
+      localStorage.setItem(`rf_camp_token_${campId}`, token);
+
       if (res.data?.totalCount) {
-        setDonorCount(res.data.totalCount);
+        setCamp(prev => ({ ...prev, registeredCount: res.data.totalCount }));
       } else {
-        setDonorCount(prev => prev + 1);
+        setCamp(prev => ({ ...prev, registeredCount: (prev.registeredCount || 0) + 1 }));
       }
     } catch (err) {
       setErrorMsg(err.response?.data?.error || 'Registration failed. Please check your network.');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   const handleShare = () => {
-    const text = 'Join the Mega Youth Blood Donation Movement at Government Engineering College, Hassan on 9/11/2026! Every unit saves up to 3 lives. Register now on RedFlow!';
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(window.location.href);
       setCopiedShare(true);
-      setTimeout(() => setCopiedShare(false), 2200);
+      setTimeout(() => setCopiedShare(false), 2000);
     }
   };
 
+  const handleCopyToken = () => {
+    if (navigator.clipboard && registrationToken) {
+      navigator.clipboard.writeText(registrationToken);
+      setCopiedToken(true);
+      setTimeout(() => setCopiedToken(false), 2000);
+    }
+  };
+
+  const targetGoal = camp.targetUnits || 250;
+  const currentCount = camp.registeredCount || 0;
+  const progressPct = Math.min(100, Math.round((currentCount / targetGoal) * 100));
+
   return (
-    <div className="rf-camp-page">
-      {/* ── Top Header Bar ── */}
-      <header className="rf-camp-navbar">
-        <div className="rf-camp-nav-container">
-          <button onClick={() => navigate(-1)} className="rf-camp-back-btn">
-            <ArrowLeft size={18} />
+    <div style={{ minHeight: '100vh', background: '#F8FAFC', color: '#1E293B', fontFamily: 'inherit' }}>
+      {/* ── Top Navbar ── */}
+      <header style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+        background: '#FFFFFF',
+        borderBottom: '1px solid #E2E8F0',
+        boxShadow: '0 1px 4px rgba(15, 23, 42, 0.04)',
+      }}>
+        <div style={{
+          maxWidth: 860,
+          margin: '0 auto',
+          padding: '12px 18px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <button
+            onClick={() => navigate(user?.role === 'donor' ? '/donor' : -1)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#F1F5F9',
+              border: '1px solid #CBD5E1',
+              borderRadius: 8,
+              padding: '6px 12px',
+              fontSize: 12.5,
+              fontWeight: 700,
+              color: '#334155',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <ArrowLeft size={16} />
             <span>Back</span>
           </button>
 
-          <Link to="/" className="rf-camp-logo-link">
-            <img src={logo} alt="RedFlow" className="rf-camp-logo-img" />
-            <span className="rf-camp-logo-text">
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+            <img src={logo} alt="RedFlow" style={{ width: 26, height: 26, objectFit: 'contain' }} />
+            <span style={{ fontSize: 18, fontWeight: 900, color: '#172B4D', letterSpacing: -0.3 }}>
               <span style={{ color: '#DC2626' }}>Red</span>Flow
             </span>
           </Link>
 
-          <button onClick={handleShare} className="rf-camp-share-btn" title="Share event">
-            {copiedShare ? <Check size={16} color="#059669" /> : <Share2 size={16} />}
-            <span>{copiedShare ? 'Copied Link' : 'Share'}</span>
+          <button
+            onClick={handleShare}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#FFFFFF',
+              border: '1px solid #CBD5E1',
+              borderRadius: 8,
+              padding: '6px 12px',
+              fontSize: 12.5,
+              fontWeight: 700,
+              color: '#172B4D',
+              cursor: 'pointer',
+            }}
+            title="Share this camp"
+          >
+            {copiedShare ? <Check size={15} color="#059669" /> : <Share2 size={15} />}
+            <span>{copiedShare ? 'Copied' : 'Share'}</span>
           </button>
         </div>
       </header>
 
-      {/* ── Main Container ── */}
-      <main className="rf-camp-main">
-        {/* Hero Event Banner */}
-        <div className="rf-camp-hero-card">
-          <div className="rf-camp-badge-row">
-            <span className="rf-camp-live-badge">
-              <span className="rf-live-pulse-dot" />
-              UPCOMING MEGA DONATION DRIVE
-            </span>
+      {/* ── Main Camp Details Content ── */}
+      <main style={{ maxWidth: 860, margin: '0 auto', padding: '24px 18px 60px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
 
-          </div>
-
-          <h1 className="rf-camp-main-heading">
-            Youth Blood Donor Movement
-          </h1>
-
-          <p className="rf-camp-subheading">
-            Organized by <strong>RedFlow Youth Network</strong> &amp; <strong>Red Cross Society</strong> in clinical partnership with <strong>Hassan Institute of Medical Sciences (HIMS Blood Bank)</strong>.
-          </p>
-
-          {/* Quick Event Summary Highlights */}
-          <div className="rf-camp-meta-strip">
-            <div className="rf-camp-meta-box">
-              <Calendar size={18} color="#DC2626" />
-              <div>
-                <div className="rf-meta-lbl">DATE</div>
-                <div className="rf-meta-val">Monday, 9 Nov 2026 (09/11/2026)</div>
+          {/* 1. Main Header Card */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: 16,
+            padding: '24px 22px',
+            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+          }}>
+            {/* Badges row */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{
+                  background: '#F3E8FF',
+                  color: '#7C3AED',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  letterSpacing: 0.5,
+                  textTransform: 'uppercase',
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                }}>
+                  UPCOMING YOUTH MOVEMENT
+                </span>
+                <span style={{
+                  background: '#ECFDF5',
+                  color: '#059669',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  padding: '3px 10px',
+                  borderRadius: 6,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
+                  {camp.city || 'Hassan'}
+                </span>
               </div>
+
+              <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>
+                Drive ID: <strong style={{ color: '#0F172A', fontFamily: 'monospace' }}>#{camp.campId}</strong>
+              </span>
             </div>
 
-            <div className="rf-camp-meta-box">
-              <Clock size={18} color="#007C91" />
-              <div>
-                <div className="rf-meta-lbl">TIMINGS</div>
-                <div className="rf-meta-val">9:00 AM – 4:30 PM IST</div>
-              </div>
-            </div>
-
-            <div className="rf-camp-meta-box full-span">
-              <MapPin size={18} color="#D97706" />
-              <div>
-                <div className="rf-meta-lbl">CAMP VENUE</div>
-                <div className="rf-meta-val">
-                  Main College Auditorium &amp; Health Center, <strong>Government Engineering College, Hassan (GECH)</strong>
-                </div>
-                <div className="rf-meta-sub">Dairy Circle, B.M. Road, Hassan, Karnataka - 573201</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Two Column Content Grid ── */}
-        <div className="rf-camp-grid">
-          {/* Left Column: Camp Objectives, Perks & Eligibility */}
-          <div className="rf-camp-left-col">
-            {/* Why This Camp Matters */}
-            <div className="rf-camp-info-card">
-              <h2 className="rf-camp-sec-title">
-                <Heart size={20} color="#DC2626" />
-                <span>The Mission Behind GECH Hassan Drive</span>
-              </h2>
-              <p className="rf-camp-text">
-                Every month, hospitals across Hassan district face sudden acute shortages of blood for emergency trauma victims, thalassemia children, and maternity surgeries. By turning out on <strong>November 9th, 2026</strong>, student engineers, professors, and youth from across Hassan can build an unbreakable emergency buffer.
+            {/* Title & Subtitle */}
+            <div>
+              <h1 style={{ fontSize: 'clamp(20px, 3.5vw, 26px)', fontWeight: 900, color: '#172B4D', margin: '0 0 6px', lineHeight: 1.25 }}>
+                {camp.title}
+              </h1>
+              <p style={{ fontSize: 13.5, color: '#475569', margin: 0, lineHeight: 1.5 }}>
+                Organized by <strong>{camp.organizer || 'RedFlow Youth Movement & NSS'}</strong> in clinical partnership with <strong>{camp.clinicalPartner || 'HIMS Blood Bank'}</strong>.
               </p>
-              <div className="rf-camp-target-highlight">
-                <div className="rf-target-num">250+</div>
-                <div>
-                  <div className="rf-target-title">Target Whole Blood Units Goal</div>
-                  <div className="rf-target-sub">Can treat up to 750 emergency surgical and trauma patients</div>
-                </div>
-              </div>
             </div>
 
-            {/* Perks for Donors */}
-            <div className="rf-camp-info-card">
-              <h2 className="rf-camp-sec-title">
-                <Award size={20} color="#D97706" />
-                <span>What Every Voluntary Donor Receives</span>
-              </h2>
-              <div className="rf-camp-perks-list">
-                <div className="rf-camp-perk-item">
-                  <ShieldCheck size={18} color="#059669" />
-                  <div>
-                    <strong>Verified On-Chain Certificate:</strong> Official Certificate of Appreciation anchored to Ethereum Sepolia with QR code for college credits &amp; NSS volunteering recognition.
-                  </div>
-                </div>
-                <div className="rf-camp-perk-item">
-                  <Activity size={18} color="#007C91" />
-                  <div>
-                    <strong>Free Health &amp; Hemoglobin Checkup:</strong> Complete vitals check (Blood pressure, pulse, Hemoglobin Hb count, ABO-Rh typing) by HIMS clinical medical officers.
-                  </div>
-                </div>
-                <div className="rf-camp-perk-item">
-                  <Sparkles size={18} color="#7C3AED" />
-                  <div>
-                    <strong>Nutritional Refreshment Pack:</strong> High-protein energy refreshments, glucose juices, and fresh fruits post-donation.
-                  </div>
-                </div>
-                <div className="rf-camp-perk-item">
-                  <CheckCircle2 size={18} color="#DC2626" />
-                  <div>
-                    <strong>Donor Privilege Badge:</strong> Priority emergency blood support for yourself and immediate family via RedFlow network.
-                  </div>
-                </div>
+            {/* Live Progress Bar */}
+            <div style={{ background: '#F8FAFC', padding: '12px 14px', borderRadius: 10, border: '1px solid #E2E8F0', marginTop: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                <span>Live Drive Registrations</span>
+                <span style={{ color: '#DC2626' }}>
+                  {currentCount} / {targetGoal} Units Goal ({progressPct}%)
+                </span>
               </div>
-            </div>
-
-            {/* Donor Eligibility Quick Checklist */}
-            <div className="rf-camp-info-card">
-              <h2 className="rf-camp-sec-title">
-                <FileCheck size={20} color="#007C91" />
-                <span>Eligibility Checklist for Students &amp; Youths</span>
-              </h2>
-              <ul className="rf-camp-checklist">
-                <li>Age must be between <strong>18 and 65 years</strong>.</li>
-                <li>Weight must be at least <strong>45 kg</strong>.</li>
-                <li>Hemoglobin level should be at least <strong>12.5 g/dL</strong> (tested free on-site).</li>
-                <li>Must be at least <strong>90 days</strong> since your previous whole blood donation.</li>
-                <li>Have a light meal and drink plenty of water prior to donation.</li>
-                <li>Please carry your <strong>College Student ID</strong> or government photo identification.</li>
-              </ul>
+              <div style={{ width: '100%', height: 7, background: '#E2E8F0', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{
+                  width: `${Math.max(4, progressPct)}%`,
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #DC2626, #EF4444)',
+                  borderRadius: 999,
+                  transition: 'width 0.4s ease'
+                }} />
+              </div>
             </div>
           </div>
 
-          {/* Right Column: RSVP & Join Form */}
-          <div className="rf-camp-right-col">
-            <div className="rf-camp-rsvp-card">
-              <div className="rf-rsvp-header">
-                <h3 className="rf-rsvp-title">Register for the Camp</h3>
-                <p className="rf-rsvp-sub">Confirm your attendance in 30 seconds</p>
+          {/* 2. Key Logistics Grid (4-card clean matrix) */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+            gap: 12,
+          }}>
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', flexShrink: 0 }}>
+                <Calendar size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Event Date</div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', marginTop: 2 }}>{camp.date}</div>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#E0F2FE', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284C7', flexShrink: 0 }}>
+                <Clock size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Drive Timings</div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', marginTop: 2 }}>{camp.time}</div>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              gridColumn: '1 / -1'
+            }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D97706', flexShrink: 0 }}>
+                <MapPin size={18} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Camp Venue Location</div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', marginTop: 2 }}>{camp.venue}</div>
+              </div>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '14px 16px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 12,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              gridColumn: '1 / -1'
+            }}>
+              <div style={{ width: 34, height: 34, borderRadius: 8, background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669', flexShrink: 0 }}>
+                <Building2 size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase' }}>Clinical Oversight &amp; Testing</div>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', marginTop: 2 }}>{camp.clinicalPartner || 'HIMS Blood Bank'}</div>
+                <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 1 }}>
+                  Licensed medical officers and transfusion specialists on-site
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Description & Donor Perks (Clean 3 Cards) */}
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: 16,
+            padding: '22px 20px',
+            boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 14,
+          }}>
+            <h3 style={{ fontSize: 15, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+              Camp Overview &amp; Voluntary Donor Recognition
+            </h3>
+
+            {camp.description && (
+              <p style={{ fontSize: 13, color: '#475569', margin: 0, lineHeight: 1.6 }}>
+                {camp.description}
+              </p>
+            )}
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+              gap: 10,
+              marginTop: 4,
+            }}>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#059669', fontWeight: 700, fontSize: 12.5, marginBottom: 4 }}>
+                  <ShieldCheck size={16} />
+                  <span>On-Chain Certificate</span>
+                </div>
+                <div style={{ fontSize: 11.5, color: '#64748B', lineHeight: 1.4 }}>
+                  Official voluntary certificate anchored to Ethereum Sepolia with permanent QR audit proof.
+                </div>
               </div>
 
-              {isJoined ? (
-                <div className="rf-rsvp-success-box">
-                  <div className="rf-rsvp-success-icon">
-                    <CheckCircle2 size={36} color="#059669" />
-                  </div>
-                  <h4 className="rf-rsvp-success-heading">You are Registered!</h4>
-                  <p className="rf-rsvp-success-text">
-                    Thank you, <strong>{donorName || 'Champion'}</strong>! Your commitment has been recorded for the Youth Blood Donor Movement at <strong>GECH Hassan on 9/11/2026</strong>.
-                  </p>
-                  <div className="rf-rsvp-ticket-chip">
-                    <span>Registration Token:</span>
-                    <strong>{registeredToken || `#GECH-CAMP-${donorCount}`}</strong>
-                  </div>
-                  <p style={{ fontSize: 11, color: '#64748B', marginTop: 10 }}>
-                    A reminder will be sent to your registered contact. See you at the GECH Auditorium!
-                  </p>
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#0284C7', fontWeight: 700, fontSize: 12.5, marginBottom: 4 }}>
+                  <Activity size={16} />
+                  <span>Free Health Screening</span>
                 </div>
-              ) : (
-                <form onSubmit={handleJoin} className="rf-rsvp-form">
-                  {errorMsg && (
-                    <div style={{
-                      background: '#FEF2F2',
-                      border: '1px solid #FECDD3',
-                      color: '#DC2626',
+                <div style={{ fontSize: 11.5, color: '#64748B', lineHeight: 1.4 }}>
+                  Complete vitals review: blood pressure, pulse, Hemoglobin Hb count, and ABO-Rh typing on site.
+                </div>
+              </div>
+
+              <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 10, padding: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#7C3AED', fontWeight: 700, fontSize: 12.5, marginBottom: 4 }}>
+                  <Sparkles size={16} />
+                  <span>Nutrition &amp; Recovery</span>
+                </div>
+                <div style={{ fontSize: 11.5, color: '#64748B', lineHeight: 1.4 }}>
+                  High-protein refreshments, glucose drinks, and post-donation clinical observation care.
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Eligibility Rule Bar */}
+            <div style={{
+              background: '#FFF7ED',
+              border: '1px solid #FED7AA',
+              borderRadius: 10,
+              padding: '10px 14px',
+              fontSize: 12,
+              color: '#9A3412',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              lineHeight: 1.45
+            }}>
+              <Info size={16} color="#EA580C" style={{ flexShrink: 0 }} />
+              <div>
+                <strong>Quick Eligibility:</strong> Age 18–65 • Weight 45+ kg • 90 days since previous whole blood donation • Carry your College or Government Photo ID.
+              </div>
+            </div>
+          </div>
+
+          {/* 4. DEDICATED REGISTRATION / RSVP SECTION */}
+          <div style={{
+            background: '#FFFFFF',
+            border: isRegistered ? '1.5px solid #A7F3D0' : '1.5px solid #CBD5E1',
+            borderRadius: 16,
+            padding: '24px 22px',
+            boxShadow: '0 4px 14px rgba(15, 23, 42, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 16,
+          }}>
+            {isRegistered ? (
+              /* Already Registered Confirmation */
+              <div style={{ textAlign: 'center', padding: '10px 0' }}>
+                <div style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: '50%',
+                  background: '#ECFDF5',
+                  color: '#059669',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 12px'
+                }}>
+                  <CheckCircle2 size={32} />
+                </div>
+
+                <h3 style={{ fontSize: 19, fontWeight: 900, color: '#065F46', margin: '0 0 6px' }}>
+                  You are Registered for this Camp!
+                </h3>
+                <p style={{ fontSize: 13, color: '#047857', margin: '0 0 16px', lineHeight: 1.5 }}>
+                  Your donation slot has been reserved. Please show this token at the welcome desk at {camp.venue}.
+                </p>
+
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  background: '#F0FDF4',
+                  border: '1.5px dashed #059669',
+                  borderRadius: 10,
+                  padding: '8px 18px',
+                  marginBottom: 16
+                }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#065F46' }}>Registration Token:</span>
+                  <strong style={{ fontSize: 16, fontFamily: 'monospace', color: '#047857' }}>
+                    {registrationToken || '#CAMP-101'}
+                  </strong>
+                  <button
+                    type="button"
+                    onClick={handleCopyToken}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#059669',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: 2
+                    }}
+                    title="Copy Token"
+                  >
+                    {copiedToken ? <Check size={14} /> : <Copy size={14} />}
+                  </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => navigate(user?.role === 'donor' ? '/donor' : '/')}
+                    style={{
+                      background: '#059669',
+                      color: '#FFFFFF',
+                      border: 'none',
                       borderRadius: 8,
-                      padding: '8px 12px',
-                      fontSize: 12,
-                      fontWeight: 600
-                    }}>
-                      {errorMsg}
-                    </div>
-                  )}
-
-                  <div className="rf-form-group">
-                    <label>Full Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={donorName}
-                      onChange={(e) => setDonorName(e.target.value)}
-                      placeholder="e.g. Prajwal K L"
-                      className="rf-camp-input"
-                    />
-                  </div>
-
-                  <div className="rf-form-group">
-                    <label>Phone / WhatsApp Number *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={donorPhone}
-                      onChange={(e) => setDonorPhone(e.target.value)}
-                      placeholder="e.g. 98765 43210"
-                      className="rf-camp-input"
-                    />
-                  </div>
-
-                  <div className="rf-form-row">
-                    <div className="rf-form-group" style={{ flex: 1 }}>
-                      <label>Blood Group</label>
-                      <select
-                        value={bloodGroup}
-                        onChange={(e) => setBloodGroup(e.target.value)}
-                        className="rf-camp-input"
-                      >
-                        {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Do not know'].map(g => (
-                          <option key={g} value={g}>{g}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="rf-form-group" style={{ flex: 1.2 }}>
-                      <label>College / Affiliation</label>
-                      <input
-                        type="text"
-                        value={affiliation}
-                        onChange={(e) => setAffiliation(e.target.value)}
-                        placeholder="GECH Student / Faculty"
-                        className="rf-camp-input"
-                      />
-                    </div>
-                  </div>
-
-                  <button type="submit" disabled={loading} className="rf-btn-submit-camp">
-                    <Heart size={18} />
-                    <span>{loading ? 'Registering…' : 'Join Movement & Register'}</span>
+                      padding: '9px 18px',
+                      fontSize: 13,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Go to Donor Dashboard
                   </button>
 
-                  <p className="rf-camp-form-foot">
-                    No spam. Registration helps the medical team prepare collection bags and test kits.
-                  </p>
-                </form>
-              )}
-
-              {/* Direct Hospital Contact */}
-              <div className="rf-camp-help-box">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#172B4D' }}>
-                  <Building2 size={16} color="#DC2626" />
-                  <span>Clinical Oversight:</span>
+                  <button
+                    type="button"
+                    onClick={handleShare}
+                    style={{
+                      background: '#FFFFFF',
+                      color: '#0F172A',
+                      border: '1px solid #CBD5E1',
+                      borderRadius: 8,
+                      padding: '9px 16px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <Share2 size={14} />
+                    <span>Invite Friends</span>
+                  </button>
                 </div>
-                <div style={{ fontSize: 11, color: '#475569', marginTop: 2 }}>
-                  Blood Bank Department, Hassan Institute of Medical Sciences (HIMS)
-                </div>
-                <a href="tel:108" style={{ fontSize: 11, color: '#DC2626', fontWeight: 700, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
-                  <PhoneCall size={12} />
-                  <span>24/7 Camp Helpline: 108 / 112</span>
-                </a>
               </div>
+            ) : (
+              /* Register Form / 1-Click Action */
+              <div>
+                <div style={{ marginBottom: 14 }}>
+                  <h3 style={{ fontSize: 17, fontWeight: 900, color: '#0F172A', margin: '0 0 4px' }}>
+                    Register for this Blood Donation Camp
+                  </h3>
+                  <p style={{ fontSize: 12.5, color: '#64748B', margin: 0 }}>
+                    Confirm your slot in seconds. All voluntary donors receive official certificate &amp; clinical vitals check.
+                  </p>
+                </div>
+
+                {errorMsg && (
+                  <div style={{
+                    background: '#FEF2F2',
+                    border: '1px solid #FECDD3',
+                    color: '#DC2626',
+                    borderRadius: 8,
+                    padding: '8px 12px',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    marginBottom: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6
+                  }}>
+                    <AlertCircle size={15} />
+                    <span>{errorMsg}</span>
+                  </div>
+                )}
+
+                {/* Authenticated Donor Account Card */}
+                {isAuthenticated && !showEditInputs ? (
+                  <div style={{
+                    background: '#F8FAFC',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: 10,
+                    padding: '12px 14px',
+                    marginBottom: 16,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 10
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        background: '#DC2626',
+                        color: '#FFFFFF',
+                        fontWeight: 800,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 14
+                      }}>
+                        {donorProfile?.bloodGroup || user?.bloodGroup || 'O+'}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13.5, fontWeight: 800, color: '#0F172A' }}>
+                          Registering as: {donorProfile?.name || user?.name || 'Voluntary Donor'}
+                        </div>
+                        <div style={{ fontSize: 11.5, color: '#64748B' }}>
+                          Phone: {donorProfile?.phone || user?.phone || 'On File'} • Status: {donorProfile?.isVerified ? 'Verified Donor' : 'Voluntary Donor'}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowEditInputs(true)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#007C91',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        padding: '4px 6px'
+                      }}
+                    >
+                      Edit Info
+                    </button>
+                  </div>
+                ) : (
+                  /* Form Fields if guest or editing */
+                  <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 14 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 4 }}>
+                          Full Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={guestName}
+                          onChange={(e) => setGuestName(e.target.value)}
+                          placeholder="e.g. Prajwal K L"
+                          style={{
+                            width: '100%',
+                            padding: '9px 12px',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            outline: 'none',
+                            background: '#FFFFFF'
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 4 }}>
+                          Phone / WhatsApp Number *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          value={guestPhone}
+                          onChange={(e) => setGuestPhone(e.target.value)}
+                          placeholder="e.g. 98765 43210"
+                          style={{
+                            width: '100%',
+                            padding: '9px 12px',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            outline: 'none',
+                            background: '#FFFFFF'
+                          }}
+                        />
+                      </div>
+
+                      <div>
+                        <label style={{ fontSize: 12, fontWeight: 700, color: '#334155', display: 'block', marginBottom: 4 }}>
+                          Blood Group
+                        </label>
+                        <select
+                          value={guestBloodGroup}
+                          onChange={(e) => setGuestBloodGroup(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '9px 12px',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: 8,
+                            fontSize: 13,
+                            outline: 'none',
+                            background: '#FFFFFF'
+                          }}
+                        >
+                          {['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Do not know'].map(g => (
+                            <option key={g} value={g}>{g}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </form>
+                )}
+
+                {/* Primary Action Button */}
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleRegister}
+                  style={{
+                    width: '100%',
+                    background: '#DC2626',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: 10,
+                    padding: '13px 20px',
+                    fontSize: 14,
+                    fontWeight: 800,
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Heart size={18} fill="#FFFFFF" />
+                  <span>{isSubmitting ? 'Registering Slot…' : 'Register for this Camp'}</span>
+                </button>
+
+                <p style={{ fontSize: 11, color: '#94A3B8', textAlign: 'center', margin: '8px 0 0' }}>
+                  By registering, your slot is reserved for voluntary donation on {camp.date}. No spam.
+                </p>
+              </div>
+            )}
+
+            {/* Helpline contact banner */}
+            <div style={{
+              borderTop: '1px solid #F1F5F9',
+              paddingTop: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 8,
+              fontSize: 12,
+              color: '#64748B'
+            }}>
+              <a
+                href="tel:108"
+                style={{
+                  color: '#DC2626',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4
+                }}
+              >
+                <PhoneCall size={13} />
+                <span>24/7 Medical Helpline: 108 / 112</span>
+              </a>
+
+              <span>Email: <strong style={{ color: '#0F172A' }}>{camp.contactEmail || 'youth@redflow.org'}</strong></span>
             </div>
           </div>
+
         </div>
       </main>
     </div>

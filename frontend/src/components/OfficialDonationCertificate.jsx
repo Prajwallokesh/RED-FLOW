@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Download, Award, ShieldCheck, Eye, Check, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Download, Award, ShieldCheck, Eye, Check, ExternalLink } from 'lucide-react';
+import QRCode from 'qrcode';
 import certTemplateImg from '../assets/official_certificate_template.jpg';
 
 /**
@@ -8,29 +9,52 @@ import certTemplateImg from '../assets/official_certificate_template.jpg';
  * - Renders a sleek, compact row card on the donor dashboard matching the
  *   "Rest Interval In Progress" row directly above it.
  * - Provides immediate "View" (opens fullscreen modal) and "Download" buttons.
- * - Inside the modal, renders the official RedFlow certificate artwork with
- *   the donor's name dynamically rendered in calligraphy cursive with a pure
- *   white background patch (zero overlap).
- * - Generates high-resolution PNG downloads on-the-fly via HTML5 canvas.
+ * - Dynamically overlays:
+ *   1. Top-Right: Certificate No (e.g. RF-2026-BU001) and Date of Issue
+ *   2. Center: Recipient Donor Name in elegant crimson cursive calligraphy
+ *   3. Bottom-Left: Scannable real-time QR code linked directly to the
+ *      on-chain blockchain verification route (/verify/:unitId).
+ * - Canvas rasterizer guarantees pixel-perfect high-resolution PNG downloads.
  * ─────────────────────────────────────────────────────────────────────────────
  */
 const OfficialDonationCertificate = ({
   donorName = 'Prajwal Lokesh',
   certificateNo = 'RF-2026-0001',
   issueDate = '15 Oct 2026',
+  unitId = '0001',
   txHash = '',
 }) => {
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+
+  // Target ID for verification: clean unitId or extracted from certificateNo
+  const targetId = unitId || (certificateNo ? certificateNo.replace(/^RF(-\d{4})?-/i, '') : '0001');
+  const verifyUrl = `${window.location.origin}/verify/${targetId}`;
+
+  // Generate dynamic QR code matching the exact RedFlow verification URL
+  useEffect(() => {
+    QRCode.toDataURL(verifyUrl, {
+      width: 360,
+      margin: 1,
+      color: {
+        dark: '#111827',
+        light: '#FFFFFF',
+      },
+    })
+      .then((url) => setQrDataUrl(url))
+      .catch((err) => console.warn('[OfficialDonationCertificate] QR generation error:', err));
+  }, [verifyUrl]);
 
   const handleDownload = (e) => {
     if (e && e.stopPropagation) e.stopPropagation();
     setDownloading(true);
+
     try {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
-      canvas.height = 682;
+      canvas.height = 681;
       const ctx = canvas.getContext('2d');
       const img = new Image();
       img.crossOrigin = 'anonymous';
@@ -38,36 +62,66 @@ const OfficialDonationCertificate = ({
 
       img.onload = () => {
         // 1. Draw base certificate artwork
-        ctx.drawImage(img, 0, 0, 1024, 682);
+        ctx.drawImage(img, 0, 0, 1024, 681);
 
-        // 2. Pure white patch over recipient name area (guaranteed clean background)
+        // 2. Dynamic Top-Right: Certificate No & Date of Issue
+        // Clear area to the right of vertical red bar (x: 778)
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(240, 280, 544, 88);
+        ctx.fillRect(785, 46, 215, 42);
 
-        // 3. Delicate accent underline below name
-        ctx.strokeStyle = '#CBD5E1';
+        ctx.fillStyle = '#262626';
+        ctx.font = '500 12px "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`Certificate No: ${certificateNo}`, 796, 57);
+        ctx.fillText(`Date of Issue: ${issueDate}`, 796, 77);
+
+        // 3. Dynamic Center: Donor Name in Calligraphy Red Cursive
+        // White patch over center area
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(260, 275, 504, 74);
+
+        // Name in elegant cursive script
+        ctx.fillStyle = '#DC2626';
+        ctx.font = 'italic bold 42px "Great Vibes", "Dancing Script", cursive, Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.fillText(donorName, 512, 342);
+
+        // Re-stroke crisp underline in matching crimson-wine (#703E3F)
+        ctx.strokeStyle = '#703E3F';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(320, 362);
-        ctx.lineTo(704, 362);
+        ctx.moveTo(300, 352);
+        ctx.lineTo(724, 352);
         ctx.stroke();
 
-        // 4. Render dynamic donor name in calligraphy red cursive script
-        ctx.fillStyle = '#DC2626';
-        ctx.font = 'italic bold 44px "Great Vibes", "Dancing Script", cursive, Georgia, serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(donorName, 512, 332);
+        // 4. Dynamic Bottom-Left: Scannable QR Code
+        const renderAndSave = () => {
+          const link = document.createElement('a');
+          link.download = `RedFlow-Official-Certificate-${donorName.replace(/\s+/g, '_')}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          setDownloading(false);
+          setDownloaded(true);
+          setTimeout(() => setDownloaded(false), 2500);
+        };
 
-        // 5. Trigger instant download
-        const link = document.createElement('a');
-        link.download = `RedFlow-Official-Certificate-${donorName.replace(/\s+/g, '_')}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        setDownloading(false);
-        setDownloaded(true);
-        setTimeout(() => setDownloaded(false), 2500);
+        if (qrDataUrl) {
+          const qrImg = new Image();
+          qrImg.onload = () => {
+            // White patch to erase static placeholder QR
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(172, 472, 96, 96);
+            // Draw real scannable QR code
+            ctx.drawImage(qrImg, 175, 475, 90, 90);
+            renderAndSave();
+          };
+          qrImg.onerror = renderAndSave;
+          qrImg.src = qrDataUrl;
+        } else {
+          renderAndSave();
+        }
       };
 
       img.onerror = () => {
@@ -88,87 +142,39 @@ const OfficialDonationCertificate = ({
       {/* ── Compact Dashboard Row Card (Matches Rest Interval In Progress Row) ── */}
       <div
         onClick={() => setShowModal(true)}
-        style={{
-          border: '1.5px solid rgba(220, 38, 38, 0.25)',
-          background: 'linear-gradient(135deg, rgba(254, 242, 242, 0.85) 0%, #FFFFFF 100%)',
-          borderRadius: 12,
-          padding: '12px 14px',
-          display: 'flex',
-          gap: 12,
-          alignItems: 'center',
-          cursor: 'pointer',
-          boxShadow: '0 1px 3px rgba(220, 38, 38, 0.04)',
-          transition: 'all 0.15s ease',
-        }}
+        className="rf-donor-cert-row"
       >
-        {/* Left Icon Wrap */}
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 9,
-            background: 'rgba(220, 38, 38, 0.12)',
-            color: '#DC2626',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <Award size={20} />
-        </div>
-
-        {/* Text Details */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
-              Official Donation Certificate
-            </span>
-            <span
-              style={{
-                background: 'rgba(46, 125, 50, 0.12)',
-                color: '#2E7D32',
-                fontSize: 10,
-                fontWeight: 800,
-                padding: '2px 7px',
-                borderRadius: 100,
-                letterSpacing: 0.3,
-              }}
-            >
-              Ready
-            </span>
+        <div className="rf-donor-cert-top-wrap">
+          {/* Left Icon Wrap */}
+          <div className="rf-donor-cert-icon">
+            <Award size={20} />
           </div>
-          <div style={{ fontSize: 11, color: '#6C757D', lineHeight: 1.3 }}>
-            Certificate of Appreciation for voluntary donation. Tap to view or download.
+
+          {/* Text Details */}
+          <div className="rf-donor-cert-content">
+            <div className="rf-donor-cert-title-wrap">
+              <span className="rf-donor-cert-title">
+                Official Donation Certificate
+              </span>
+              <span className="rf-donor-cert-badge">
+                Ready
+              </span>
+            </div>
+            <div className="rf-donor-cert-subtitle">
+              Certificate No: <strong>{certificateNo}</strong> • Tap to preview or download high-res PNG.
+            </div>
           </div>
         </div>
 
         {/* Action Buttons: View & Download */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            flexShrink: 0,
-          }}
+          className="rf-donor-cert-actions"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
             onClick={() => setShowModal(true)}
-            style={{
-              background: '#FFFFFF',
-              border: '1px solid #CBD5E1',
-              borderRadius: 8,
-              padding: '6px 10px',
-              fontSize: 11.5,
-              fontWeight: 700,
-              color: '#172B4D',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
+            className="rf-donor-cert-btn-view"
             title="View full certificate"
           >
             <Eye size={13} color="#007C91" />
@@ -179,20 +185,7 @@ const OfficialDonationCertificate = ({
             type="button"
             onClick={handleDownload}
             disabled={downloading}
-            style={{
-              background: '#DC2626',
-              border: 'none',
-              borderRadius: 8,
-              padding: '6px 11px',
-              fontSize: 11.5,
-              fontWeight: 700,
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
-            }}
+            className="rf-donor-cert-btn-download"
             title="Download PNG certificate"
           >
             {downloaded ? (
@@ -236,12 +229,99 @@ const OfficialDonationCertificate = ({
                   alt={`Certificate for ${donorName}`}
                   style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
-                {/* Clean Pure White Background Patch + Calligraphy Recipient Name */}
-                <div className="rf-cert-name-box">
-                  <div className="rf-cert-name-text">
+
+                {/* 1. Dynamic Top-Right Overlay: Certificate No & Date of Issue */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '6.75%',
+                    left: '76.6%',
+                    width: '21%',
+                    background: '#FFFFFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    padding: '2px 4px',
+                    fontSize: 'clamp(8px, 1.25vw, 12px)',
+                    color: '#262626',
+                    fontFamily: '"Inter", sans-serif',
+                    lineHeight: 1.45,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <div>Certificate No: <strong style={{ color: '#0F172A' }}>{certificateNo}</strong></div>
+                  <div>Date of Issue: <strong style={{ color: '#0F172A' }}>{issueDate}</strong></div>
+                </div>
+
+                {/* 2. Dynamic Center Overlay: Recipient Donor Name */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '41.5%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '51%',
+                    height: '8.5%',
+                    background: '#FFFFFF',
+                    borderBottom: '1.5px solid #703E3F',
+                    display: 'flex',
+                    alignItems: 'flex-end',
+                    justifyContent: 'center',
+                    paddingBottom: '2px',
+                    boxSizing: 'border-box',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: '"Great Vibes", "Dancing Script", cursive, Georgia, serif',
+                      fontSize: 'clamp(18px, 3.8vw, 36px)',
+                      fontWeight: 700,
+                      fontStyle: 'italic',
+                      color: '#DC2626',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      lineHeight: 1,
+                    }}
+                  >
                     {donorName}
                   </div>
                 </div>
+
+                {/* 3. Dynamic Bottom-Left Overlay: Clickable QR Code */}
+                {qrDataUrl && (
+                  <a
+                    href={verifyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Click to verify this certificate on RedFlow Blockchain"
+                    style={{
+                      position: 'absolute',
+                      top: '69.4%',
+                      left: '16.9%',
+                      width: '9.3%',
+                      aspectRatio: '1',
+                      background: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '2px',
+                      borderRadius: 4,
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                      transition: 'transform 0.15s ease',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.08)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  >
+                    <img
+                      src={qrDataUrl}
+                      alt="Blockchain Verification QR"
+                      style={{ width: '100%', height: '100%', display: 'block' }}
+                    />
+                  </a>
+                )}
               </div>
             </div>
 
@@ -250,7 +330,30 @@ const OfficialDonationCertificate = ({
                 <ShieldCheck size={14} color="#059669" />
                 <span>Certificate No: <strong>{certificateNo}</strong> • Date: <strong>{issueDate}</strong></span>
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <a
+                  href={verifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    background: 'rgba(0,124,145,0.08)',
+                    color: '#007C91',
+                    border: '1px solid rgba(0,124,145,0.25)',
+                    borderRadius: 8,
+                    padding: '8px 12px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <ExternalLink size={13} />
+                  <span>Verify on Blockchain</span>
+                </a>
+
                 <button
                   onClick={handleDownload}
                   disabled={downloading}

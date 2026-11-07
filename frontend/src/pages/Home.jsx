@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Heart,
@@ -16,10 +16,13 @@ import {
   Users,
   QrCode,
   FileCheck,
-  Droplet
+  Droplet,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import ScrollableBloodDrop from '../components/ScrollableBloodDrop';
+import EligibilityChecker from '../components/EligibilityChecker';
+import api from '../lib/api';
+import logo from '../assets/logo.png';
 
 /**
  * ─────────────────────────────────────────────────────────────────────────────
@@ -50,8 +53,20 @@ const BLOOD_COMPATIBILITY = [
  */
 const Home = () => {
   const { isAuthenticated, user } = useAuth();
-  const shortageSectionRef = useRef(null);
   const youthSectionRef = useRef(null);
+  const [latestCamp, setLatestCamp] = useState(null);
+
+  useEffect(() => {
+    api.get('/camps')
+      .then((res) => {
+        if (res.data?.camps && res.data.camps.length > 0) {
+          setLatestCamp(res.data.camps[0]);
+        }
+      })
+      .catch((err) => {
+        console.log('[Home] Camps fetch fallback to default:', err?.message);
+      });
+  }, []);
 
   /**
    * Helper: Automatically routes a logged-in user to their respective dashboard
@@ -112,30 +127,50 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 2. SECTION: INDIA'S BLOOD SHORTAGE & SCROLLABLE LIQUID BLOOD DROPLET ── */}
-      <section className="rf-shortage-section" ref={shortageSectionRef}>
+      {/* ── 2. SECTION: CHECK YOUR ELIGIBILITY (MOHFW / eRAKTKOSH 9-QUESTION CLINICAL PRE-SCREENING) ── */}
+      <EligibilityChecker />
+
+      {/* ── 3. SECTION: INDIA'S BLOOD SHORTAGE (CLEAN EDITORIAL SECTION) ── */}
+      <section className="rf-shortage-section">
         <div className="rf-new-container">
-          <div className="rf-shortage-grid">
-  <h2 className="rf-shortage-title">
-                India Faces a Shortage of <span style={{ color: '#DC2626' }}>2 Million Units</span> of Blood
-              </h2>
-            {/* Pure Scroll-Reactive Blood Droplet Illustration */}
-            <ScrollableBloodDrop containerRef={shortageSectionRef} />
+          <div className="rf-shortage-clean-card">
+            <h2 className="rf-shortage-title">
+              India Faces a Shortage of <span style={{ color: '#DC2626' }}>2 Million Units</span> of Blood
+            </h2>
 
-            {/* Editorial Content Matching Reference */}
-            <div className="rf-shortage-content">
-            
+            <p className="rf-shortage-desc">
+              India requires approximately 15 million units of blood each year, yet only 13 million are collected. Just 2% of India's youth donating regularly would be enough to bridge this gap entirely.
+            </p>
 
-              <p className="rf-shortage-desc">
-                India requires approximately 15 million units of blood each year, yet only 13 million are collected. Just 2% of India's youth donating regularly would be enough to bridge this gap entirely.
-              </p>
-
-              {/* Action Button: Rectangular Red KNOW MORE */}
-              <div style={{ marginTop: 8 }}>
-                <Link to="/youth-camp" className="rf-btn-know-more">
-                  KNOW MORE
-                </Link>
+            {/* Quick Stat Chips */}
+            <div className="rf-shortage-stats-row">
+              <div className="rf-shortage-stat-item">
+                <span className="rf-shortage-stat-num">15M Units</span>
+                <span className="rf-shortage-stat-lbl">Annual Requirement</span>
               </div>
+              <div className="rf-shortage-stat-divider" />
+              <div className="rf-shortage-stat-item">
+                <span className="rf-shortage-stat-num">13M Units</span>
+                <span className="rf-shortage-stat-lbl">Collected Annually</span>
+              </div>
+              <div className="rf-shortage-stat-divider" />
+              <div className="rf-shortage-stat-item">
+                <span className="rf-shortage-stat-num" style={{ color: '#DC2626' }}>2M Units</span>
+                <span className="rf-shortage-stat-lbl">Deficit Gap</span>
+              </div>
+            </div>
+
+            {/* Action Button: Rectangular Red KNOW MORE linking to Wikipedia */}
+            <div style={{ marginTop: 10 }}>
+              <a
+                href="https://en.wikipedia.org/wiki/Blood_donation_in_India"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rf-btn-know-more"
+              >
+                <span>KNOW MORE</span>
+                <ExternalLink size={15} />
+              </a>
             </div>
           </div>
         </div>
@@ -152,20 +187,24 @@ const Home = () => {
               RedFlow Youth Movement is India's largest youth-driven organization working alongside colleges, corporates, and Resident Welfare Associations (RWAs) to help blood banks maintain adequate supplies. We offer a 360° solution, from inspiring people to donate blood to facilitating donation through organized camps.
             </p>
 
-            {/* Featured Camp Banner: GECH Hassan */}
+            {/* Featured Camp Banner: Dynamic Camp Feed */}
             <div className="rf-youth-camp-callout">
               <div className="rf-youth-camp-callout-info">
-                <div className="rf-camp-tag-chip">UPCOMING YOUTH DONOR MOVEMENT</div>
+                <div className="rf-camp-tag-chip">UPCOMING BLOOD DONATION CAMP</div>
                 <div className="rf-youth-camp-callout-title">
-                  Government Engineering College, Hassan (GECH)
+                  {latestCamp?.title || 'Government Engineering College, Hassan (GECH)'}
                 </div>
                 <div className="rf-youth-camp-callout-date" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div>Time: 9:00 AM – 4:30 PM IST</div>
-                  <div>Date: 9/11/2026 (November 9, 2026)</div>
+                  <div>Time: {latestCamp?.time || '9:00 AM – 4:30 PM IST'}</div>
+                  <div>Date: {latestCamp?.date || '9/11/2026 (November 9, 2026)'}</div>
+                  <div>Venue: {latestCamp?.venue || 'GECH Auditorium, Hassan'}</div>
                 </div>
               </div>
-              <Link to="/youth-camp" className="rf-btn-camp-cta">
-                <span>View Movement Details</span>
+              <Link
+                to={isAuthenticated ? (user?.role === 'donor' ? '/donor' : '/youth-camp') : '/youth-camp'}
+                className="rf-btn-camp-cta"
+              >
+                <span>View Camp Details</span>
                 <ArrowRight size={16} />
               </Link>
             </div>
@@ -190,19 +229,19 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 5. THREE-STEP WORKFLOW: How the System Operates ── */}
+      {/* ── 5. FOUR-STEP WORKFLOW: How the System Operates ── */}
       <section className="rf-how-section">
         <div className="rf-new-container">
           <div className="rf-title-center">
             <span className="rf-section-badge">SIMPLE & TRANSPARENT</span>
             <h2 className="rf-sec-heading">How RedFlow Saves Lives</h2>
             <p className="rf-sec-sub">
-              Three simple steps from volunteer sign up to life-saving transfusion.
+              Four simple steps from volunteer registration to life-saving bedside transfusion.
             </p>
           </div>
 
-          <div className="rf-steps-3col">
-            {/* Step 1 */}
+          <div className="rf-steps-4col">
+            {/* Step 1: Register */}
             <div className="rf-step-box">
               <div className="rf-step-num-icon">
                 <span className="rf-step-num">01</span>
@@ -212,35 +251,49 @@ const Home = () => {
               </div>
               <h3 className="rf-step-heading">1. Register as a Donor</h3>
               <p className="rf-step-text">
-                Enroll in 60 seconds with your blood type and location. Your personal identity remains private and encrypted.
+                Enroll in 60 seconds with your blood group and location. Your personal identity remains secure and encrypted.
               </p>
             </div>
 
-            {/* Step 2 */}
+            {/* Step 2: Donate */}
             <div className="rf-step-box">
               <div className="rf-step-num-icon">
                 <span className="rf-step-num">02</span>
-                <div className="rf-step-icon-circle" style={{ background: '#E0F2FE', color: '#0284C7' }}>
-                  <Zap size={20} />
+                <div className="rf-step-icon-circle" style={{ background: '#FEF3C7', color: '#D97706' }}>
+                  <Droplet size={20} />
                 </div>
               </div>
-              <h3 className="rf-step-heading">2. Instant Emergency Match</h3>
+              <h3 className="rf-step-heading">2. Donate Blood</h3>
               <p className="rf-step-text">
-                When a nearby hospital requests emergency blood, our automated engine notifies compatible voluntary donors immediately.
+                Visit an authorized blood bank or youth drive camp. Undergo rapid clinical vitals screening and safe phlebotomy.
               </p>
             </div>
 
-            {/* Step 3 */}
+            {/* Step 3: Blockchain Verification */}
             <div className="rf-step-box">
               <div className="rf-step-num-icon">
                 <span className="rf-step-num">03</span>
-                <div className="rf-step-icon-circle" style={{ background: '#ECFDF5', color: '#059669' }}>
+                <div className="rf-step-icon-circle" style={{ background: '#E0F2FE', color: '#0284C7' }}>
                   <ShieldCheck size={20} />
                 </div>
               </div>
-              <h3 className="rf-step-heading">3. Cryptographic Verification</h3>
+              <h3 className="rf-step-heading">3. Blockchain Verification</h3>
               <p className="rf-step-text">
-                Every unit is anchored to Ethereum smart contracts. Bedside medical staff scan the QR code to verify 100% authenticity.
+                Every unit is anchored to Ethereum smart contracts, minting an immutable audit trail and verifiable QR certificate.
+              </p>
+            </div>
+
+            {/* Step 4: Allocate */}
+            <div className="rf-step-box">
+              <div className="rf-step-num-icon">
+                <span className="rf-step-num">04</span>
+                <div className="rf-step-icon-circle" style={{ background: '#ECFDF5', color: '#059669' }}>
+                  <Building2 size={20} />
+                </div>
+              </div>
+              <h3 className="rf-step-heading">4. Allocate & Transfuse</h3>
+              <p className="rf-step-text">
+                Matched in real-time with urgent hospital requisitions and safely transfused with verified bedside provenance.
               </p>
             </div>
           </div>
@@ -259,6 +312,9 @@ const Home = () => {
           </div>
 
           <div className="rf-table-card">
+            <div className="rf-table-scroll-hint">
+              <span>← Swipe horizontally to view full matrix →</span>
+            </div>
             <div className="rf-table-responsive">
               <table className="rf-modern-table">
                 <thead>
@@ -313,16 +369,12 @@ const Home = () => {
               </p>
             </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <div className="rf-helpline-actions">
               <a href="tel:108" className="rf-helpline-btn">
                 <PhoneCall size={16} />
                 <span>Call Helpline (108 / 112)</span>
               </a>
-              <Link to="/login" style={{
-                background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)',
-                color: '#FFFFFF', borderRadius: 8, padding: '12px 20px', fontSize: 14, fontWeight: 800, textDecoration: 'none',
-                display: 'inline-flex', alignItems: 'center'
-              }}>
+              <Link to="/login" className="rf-helpline-login-btn">
                 Hospital Login
               </Link>
             </div>
@@ -330,22 +382,87 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ── 8. APPLICATION FOOTER ── */}
+      {/* ── 8. MODERN COMPREHENSIVE APPLICATION FOOTER ── */}
       <footer className="rf-new-footer">
-        <div className="rf-footer-wrap">
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 900, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 4 }}>
+        {/* Desktop / Tablet Multi-Column View */}
+        <div className="rf-footer-grid">
+          {/* Column 1: Brand & Live Telemetry */}
+          <div className="rf-footer-brand-col">
+            <Link to="/" className="rf-footer-logo">
               <span style={{ color: '#EF4444' }}>Red</span>Flow
-            </div>
-            <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>
-              © {new Date().getFullYear()} RedFlow. Decentralized Blood Supply & Telemetry Ecosystem.
+            </Link>
+            <p className="rf-footer-tagline">
+              India's 1st Blockchain-Secured Decentralized Blood Supply &amp; Telemetry Ecosystem. Ensuring verifiable provenance from voluntary donor to bedside transfusion.
+            </p>
+            <div className="rf-footer-badge">
+              <ShieldCheck size={14} />
+              <span>Ethereum Sepolia Audited</span>
             </div>
           </div>
 
-          <div className="rf-footer-links">
-            <Link to="/register" className="rf-new-footlink">Donor Sign Up</Link>
-            <Link to="/login" className="rf-new-footlink">Hospital Access</Link>
-            <Link to="/admin" className="rf-new-footlink">Admin Console</Link>
+          {/* Column 2: Quick Navigation */}
+          <div className="rf-footer-col">
+            <h4 className="rf-footer-col-title">Quick Navigation</h4>
+            <ul className="rf-footer-links-list">
+              <li><a href="#check-eligibility" className="rf-footer-link">Check Eligibility</a></li>
+              <li><a href="#youth-movement" className="rf-footer-link">Youth Movement</a></li>
+              <li><Link to="/youth-camp" className="rf-footer-link">Nearby Blood Camps</Link></li>
+              <li><Link to="/blockchain" className="rf-footer-link">Blockchain Explorer</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 3: Platform Access */}
+          <div className="rf-footer-col">
+            <h4 className="rf-footer-col-title">Platform Access</h4>
+            <ul className="rf-footer-links-list">
+              <li><Link to="/register" className="rf-footer-link">Donor Registration</Link></li>
+              <li><Link to="/login" className="rf-footer-link">Hospital Portal</Link></li>
+              <li><Link to="/login" className="rf-footer-link">Admin Console</Link></li>
+              <li><Link to="/donor" className="rf-footer-link">Donor Dashboard</Link></li>
+            </ul>
+          </div>
+
+          {/* Column 4: Emergency Contacts & Compliance */}
+          <div className="rf-footer-col">
+            <h4 className="rf-footer-col-title">Emergency &amp; Standards</h4>
+            <div className="rf-footer-links-list">
+              <div className="rf-footer-contact-item">
+                <PhoneCall size={14} style={{ color: '#EF4444', flexShrink: 0, marginTop: 2 }} />
+                <span>24/7 National Emergency Helpline: <strong>108 / 112</strong></span>
+              </div>
+              <div className="rf-footer-contact-item">
+                <ShieldCheck size={14} style={{ color: '#059669', flexShrink: 0, marginTop: 2 }} />
+                <span>MoHFW &amp; eRaktKosh Clinical Screening Standards</span>
+              </div>
+              <div className="rf-footer-contact-item">
+                <Building2 size={14} style={{ color: '#0284C7', flexShrink: 0, marginTop: 2 }} />
+                <span>National Blood Transfusion Council (NBTC) Norms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Simplified View: Just logo, name, and rights */}
+        <div className="rf-footer-mobile-simple">
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+            <img src={logo} alt="RedFlow" style={{ width: 22, height: 22, objectFit: 'contain' }} />
+            <span style={{ fontSize: 17, fontWeight: 900, color: '#FFFFFF', letterSpacing: -0.3 }}>
+              <span style={{ color: '#EF4444' }}>Red</span>Flow
+            </span>
+          </Link>
+          <div style={{ fontSize: 11.5, color: '#94A3B8', textAlign: 'center', marginTop: 2 }}>
+            © {new Date().getFullYear()} RedFlow. All rights reserved.
+          </div>
+        </div>
+
+        {/* Footer Bottom Bar */}
+        <div className="rf-footer-bottom">
+          <div>
+            © {new Date().getFullYear()} RedFlow. All rights reserved.
+          </div>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <ShieldCheck size={13} color="#059669" />
+            <span>Ethereum Sepolia Audited</span>
           </div>
         </div>
       </footer>

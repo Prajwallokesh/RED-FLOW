@@ -26,6 +26,8 @@ const App = () => {
           {/* Public & Blockchain */}
           <Route path="/"                       element={<Home />} />
           <Route path="/youth-camp"             element={<YouthCamp />} />
+          <Route path="/camps"                  element={<YouthCamp />} />
+          <Route path="/camps/:campId"          element={<YouthCamp />} />
           <Route path="/donor/camp"             element={<YouthCamp />} />
           <Route path="/login"                  element={<Login />} />
           <Route path="/register"               element={<Register />} />

@@ -1,6 +1,6 @@
 import S from '../styles/donorStyles';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Home,
   Droplet,
@@ -31,6 +31,8 @@ import {
   ArrowRight,
   Check,
   GraduationCap,
+  MapPin,
+  Building2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
@@ -54,9 +56,9 @@ const BLOOD_INSIGHTS = [
 /* ── Status Pill ─────────────────────────────────────────────────── */
 const StatusPill = ({ status }) => {
   const map = {
-    pending:  { label: 'Pending Review', color: '#FFA000', bg: 'rgba(255,160,0,0.12)', icon: <Clock size={12} /> },
-    verified: { label: 'Verified',       color: '#2E7D32', bg: 'rgba(46,125,50,0.12)', icon: <CheckCircle2 size={12} /> },
-    flagged:  { label: 'BANNED',         color: '#DC2626', bg: '#FEE2E2',              icon: <AlertTriangle size={12} /> },
+    pending: { label: 'Pending Review', color: '#FFA000', bg: 'rgba(255,160,0,0.12)', icon: <Clock size={12} /> },
+    verified: { label: 'Verified', color: '#2E7D32', bg: 'rgba(46,125,50,0.12)', icon: <CheckCircle2 size={12} /> },
+    flagged: { label: 'BANNED', color: '#DC2626', bg: '#FEE2E2', icon: <AlertTriangle size={12} /> },
   };
   const s = map[status] || map.pending;
   return (
@@ -91,10 +93,11 @@ const StatCard = ({ icon, label, value, accent }) => (
 
 /* ── Bottom Tabs ─────────────────────────────────────────────────── */
 const TABS = [
-  { id: 'home',    Icon: Home,    label: 'Home'    },
+  { id: 'home', Icon: Home, label: 'Home' },
+  { id: 'camps', Icon: GraduationCap, label: 'Camps' },
   { id: 'history', Icon: Droplet, label: 'History' },
-  { id: 'profile', Icon: User,    label: 'Profile' },
-  { id: 'alerts',  Icon: Bell,    label: 'Alerts'  },
+  { id: 'profile', Icon: User, label: 'Profile' },
+  { id: 'alerts', Icon: Bell, label: 'Alerts' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -103,21 +106,61 @@ const TABS = [
 const DonorDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab]                 = useState('home');
-  const [donor, setDonor]             = useState(null);
-  const [donations, setDonations]     = useState([]);
+  const [tab, setTab] = useState('home');
+  const [donor, setDonor] = useState(null);
+  const [donations, setDonations] = useState([]);
   const [eligibility, setEligibility] = useState(null);
   const [showEligModal, setShowEligModal] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
-  const [showTipModal, setShowTipModal]             = useState(false);
-  const [tipIndex, setTipIndex]                     = useState(() => Math.floor(Math.random() * BLOOD_INSIGHTS.length));
-  const [copiedTip, setCopiedTip]                   = useState(false);
-  const [loading, setLoading]         = useState(true);
-  const [isSyncing, setIsSyncing]     = useState(false);
+  const [showTipModal, setShowTipModal] = useState(false);
+  const [tipIndex, setTipIndex] = useState(() => Math.floor(Math.random() * BLOOD_INSIGHTS.length));
+  const [copiedTip, setCopiedTip] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(new Date());
   const [notifications, setNotifications] = useState([]);
   const [unreadAlertsCount, setUnreadAlertsCount] = useState(0);
   const [isLoadingAlerts, setIsLoadingAlerts] = useState(false);
+  const [nearbyCamps, setNearbyCamps] = useState([]);
+  const [isRegisteringCampId, setIsRegisteringCampId] = useState(null);
+  const [campRsvpSuccess, setCampRsvpSuccess] = useState({});
+
+  const fetchNearbyCamps = async () => {
+    try {
+      const res = await api.get('/camps');
+      if (res.data?.camps) {
+        setNearbyCamps(res.data.camps);
+      }
+    } catch (e) {
+      console.log('[DonorDashboard] Fetch camps error:', e?.message);
+    }
+  };
+
+  const handleCampRSVP = async (camp) => {
+    setIsRegisteringCampId(camp.campId);
+    try {
+      const payload = {
+        name: donor?.name || user?.name || 'Verified Donor',
+        phone: donor?.phone || user?.phone || '9876543210',
+        email: donor?.email || user?.email || '',
+        bloodGroup: donor?.bloodGroup || 'O+',
+        affiliation: 'RedFlow Registered Donor',
+        campId: camp.campId,
+      };
+      const res = await api.post('/camps/register', payload);
+      if (res.data?.registration) {
+        setCampRsvpSuccess((prev) => ({
+          ...prev,
+          [camp.campId]: res.data.registration.registrationToken,
+        }));
+      }
+      fetchNearbyCamps();
+    } catch (err) {
+      console.error('[DonorDashboard] Camp RSVP error:', err);
+    } finally {
+      setIsRegisteringCampId(null);
+    }
+  };
 
   /**
    * GUIDE EXPLANATION: Live Urgent Alerts from Map/Hospitals
@@ -213,6 +256,17 @@ const DonorDashboard = () => {
     }
   }, [tab]);
 
+  /* Auto-refresh when entering camps tab */
+  useEffect(() => {
+    fetchNearbyCamps();
+    if (tab === 'camps') {
+      const timer = setInterval(() => {
+        fetchNearbyCamps();
+      }, 8000);
+      return () => clearInterval(timer);
+    }
+  }, [tab]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -225,6 +279,7 @@ const DonorDashboard = () => {
             api.post('/donors/check-eligibility', {}),
             api.get('/donors/me/history'),
             fetchNotifications(true),
+            fetchNearbyCamps(),
           ]);
           setEligibility(eligRes.data);
           setDonations(histRes.data.donations || []);
@@ -245,9 +300,9 @@ const DonorDashboard = () => {
   const badge = (() => {
     const c = donor?.donationCount ?? 0;
     if (c >= 10) return { label: 'Platinum Donor', color: '#607D8B' };
-    if (c >= 5)  return { label: 'Gold Donor',     color: '#FFA000' };
-    if (c >= 3)  return { label: 'Silver Donor',   color: '#78909C' };
-    if (c >= 1)  return { label: 'Bronze Donor',   color: '#A0522D' };
+    if (c >= 5) return { label: 'Gold Donor', color: '#FFA000' };
+    if (c >= 3) return { label: 'Silver Donor', color: '#78909C' };
+    if (c >= 1) return { label: 'Bronze Donor', color: '#A0522D' };
     return null;
   })();
 
@@ -285,9 +340,9 @@ const DonorDashboard = () => {
             : donor
               ? <StatusPill status={donor.eligibilityStatus} />
               : <span style={S.statusNotReg}>
-                  <FileText size={12} />
-                  <span>Not Registered</span>
-                </span>}
+                <FileText size={12} />
+                <span>Not Registered</span>
+              </span>}
         </div>
       </div>
 
@@ -360,78 +415,119 @@ const DonorDashboard = () => {
         </div>
       )}
 
-      {/* Eligibility info — when registered */}
-      {!loading && donor && (
+      {/* ── Donor Status Cards Stack (Uniform 10px Gap Between Every Card) ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+        {/* Card 1: Eligibility / Rest Interval info */}
+        {!loading && donor && (
+          <div
+            onClick={() => setShowEligModal(true)}
+            style={{
+              ...S.infoCard,
+              borderColor: eligibility?.eligible && donor.isVerified
+                ? 'rgba(46,125,50,0.3)'
+                : 'rgba(0,124,145,0.25)',
+              background: eligibility?.eligible && donor.isVerified
+                ? 'rgba(46,125,50,0.05)'
+                : 'rgba(0,124,145,0.05)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <div style={{
+              ...S.infoIconWrap,
+              background: eligibility?.eligible && donor.isVerified ? 'rgba(46,125,50,0.12)' : 'rgba(0,124,145,0.12)',
+              color: eligibility?.eligible && donor.isVerified ? '#2E7D32' : '#007C91',
+            }}>
+              {eligibility?.eligible && donor.isVerified ? <ShieldCheck size={20} /> : <Clock size={20} />}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: eligibility?.eligible && donor.isVerified ? '#2E7D32' : '#007C91',
+                marginBottom: 2
+              }}>
+                {eligibility?.eligible && donor.isVerified
+                  ? 'Eligible to Donate (90-day Protocol Satisfied)'
+                  : donor.isFlagged
+                    ? 'Account Flagged'
+                    : !donor.isVerified
+                      ? 'Pending Admin Verification'
+                      : 'Rest Interval In Progress'}
+              </div>
+              <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.35 }}>
+                {eligibility?.reason || 'Tap to view 90-day donation interval analysis'}
+              </div>
+            </div>
+            <ChevronRight size={16} color={eligibility?.eligible && donor.isVerified ? '#2E7D32' : '#007C91'} />
+          </div>
+        )}
+
+        {/* Card 2: Official Voluntary Donation Certificate */}
+        {hasDonated && (
+          <OfficialDonationCertificate
+            donorName={donor?.name || user?.name || 'Prajwal Lokesh'}
+            certificateNo={donations[0]?.unitId ? `RF-2026-${donations[0].unitId}` : (donor?.donorId ? `RF-2026-${donor.donorId.slice(-4)}` : 'RF-2026-0001')}
+            issueDate={donations[0]?.collectionDate ? new Date(donations[0].collectionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (donor?.createdAt ? new Date(donor.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '15 Oct 2026')}
+            unitId={donations[0]?.unitId || donor?.donorId || '0001'}
+            txHash={donations[0]?.blockchainTxHash || donor?.blockchainTxHash}
+          />
+        )}
+
+        {/* Card 3: Explore Nearby Camps */}
         <div
-          onClick={() => setShowEligModal(true)}
+          onClick={() => setTab('camps')}
           style={{
             ...S.infoCard,
-            borderColor: eligibility?.eligible && donor.isVerified
-              ? 'rgba(46,125,50,0.3)'
-              : 'rgba(0,124,145,0.25)',
-            background: eligibility?.eligible && donor.isVerified
-              ? 'rgba(46,125,50,0.06)'
-              : 'rgba(0,124,145,0.05)',
-            cursor: 'pointer'
+            borderColor: 'rgba(46, 125, 50, 0.3)',
+            background: 'rgba(46, 125, 50, 0.05)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
           }}
         >
           <div style={{
             ...S.infoIconWrap,
-            background: eligibility?.eligible && donor.isVerified ? 'rgba(46,125,50,0.12)' : 'rgba(0,124,145,0.12)',
-            color: eligibility?.eligible && donor.isVerified ? '#2E7D32' : '#007C91',
+            background: 'rgba(46, 125, 50, 0.12)',
+            color: '#2E7D32',
           }}>
-            {eligibility?.eligible && donor.isVerified ? <ShieldCheck size={20} /> : <Clock size={20} />}
+            <GraduationCap size={20} />
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{
-              fontSize: 13,
-              fontWeight: 700,
-              color: eligibility?.eligible && donor.isVerified ? '#2E7D32' : '#007C91',
-              marginBottom: 2
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginBottom: 2,
+              flexWrap: 'wrap',
             }}>
-              {eligibility?.eligible && donor.isVerified
-                ? 'Eligible to Donate (90-day Protocol Satisfied)'
-                : donor.isFlagged
-                  ? 'Account Flagged'
-                  : !donor.isVerified
-                    ? 'Pending Admin Verification'
-                    : 'Rest Interval In Progress'}
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#2E7D32' }}>
+                Explore Nearby Camps
+              </span>
+              <span style={{
+                background: 'rgba(46, 125, 50, 0.12)',
+                color: '#2E7D32',
+                fontSize: 10,
+                fontWeight: 800,
+                padding: '2px 7px',
+                borderRadius: 100,
+                letterSpacing: 0.3,
+              }}>
+                {nearbyCamps.length} ACTIVE
+              </span>
             </div>
-            <div style={{ fontSize: 11, color: '#6C757D', lineHeight: 1.3 }}>
-              {eligibility?.reason || 'Tap to view 90-day donation interval analysis'}
+            <div style={{ fontSize: 11, color: '#64748B', lineHeight: 1.35 }}>
+              View upcoming youth blood movements & reserve your donation slot
             </div>
           </div>
-          <ChevronRight size={16} color="#6C757D" />
+          <ChevronRight size={16} color="#2E7D32" />
         </div>
-      )}
-
-      {/* ── Official Voluntary Donation Certificate (Shown in Place of Blood Insight Row After 1 Donation) ── */}
-      {hasDonated && (
-        <div style={{ marginBottom: 18 }}>
-          <OfficialDonationCertificate
-            donorName={donor?.name || user?.name || 'Prajwal Lokesh'}
-            certificateNo={donations[0]?.unitId ? `RF-2026-${donations[0].unitId}` : 'RF-2026-0001'}
-            issueDate={donations[0]?.collectionDate ? new Date(donations[0].collectionDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '15 Oct 2026'}
-            txHash={donor?.blockchainTxHash}
-          />
-        </div>
-      )}
+      </div>
 
       {/* Quick Actions */}
       <div style={S.sectionLabel}>Quick Actions</div>
       <div style={S.actionsGrid}>
         {[
-          { icon: <User size={20} />,        label: 'My Profile',      color: '#172B4D', cb: () => setTab('profile') },
-          { icon: <ShieldCheck size={20} />, label: 'Check 90d Rule',  color: '#007C91', cb: () => setShowEligModal(true) },
-          {
-            icon: <GraduationCap size={20} />,
-            label: 'Donation Camp',
-            color: '#7C3AED',
-            cb: () => {
-              navigate('/youth-camp');
-              window.scrollTo(0, 0);
-            },
-          },
+          { icon: <ShieldCheck size={20} />, label: 'Check 90d Rule', color: '#007C91', cb: () => setShowEligModal(true) },
           {
             icon: <PhoneCall size={20} />,
             label: 'Emergency Help',
@@ -764,9 +860,9 @@ const DonorDashboard = () => {
           </div>
           {[
             { label: 'Standard Interval', value: '90 Days Minimum' },
-            { label: 'Last Donation',     value: donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString('en-IN') : 'None (Eligible)' },
+            { label: 'Last Donation', value: donor.lastDonationDate ? new Date(donor.lastDonationDate).toLocaleDateString('en-IN') : 'None (Eligible)' },
             { label: 'Next Eligible Date', value: nextEligibleFormatted },
-            { label: 'Protocol Status',   value: eligibility?.eligible ? 'Active & Ready' : 'In Rest Period' },
+            { label: 'Protocol Status', value: eligibility?.eligible ? 'Active & Ready' : 'In Rest Period' },
           ].map(r => (
             <div key={r.label} style={S.infoRow}>
               <span style={S.infoLabel}>{r.label}</span>
@@ -896,28 +992,51 @@ const DonorDashboard = () => {
                   <span style={{ textTransform: 'capitalize' }}>{n.senderRole}</span>
                 </div>
 
-                {/* Actions row: Call hospital + Mark read toggle */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 2, paddingTop: 8, borderTop: '1px solid #EDF2F7' }}>
-                  {n.senderPhone ? (
-                    <a
-                      href={`tel:${n.senderPhone}`}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        background: '#D32F2F',
-                        color: '#FFFFFF',
-                        padding: '7px 12px',
-                        borderRadius: 8,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                      }}
-                    >
-                      <PhoneCall size={14} />
-                      <span>Call ({n.senderPhone})</span>
-                    </a>
-                  ) : <div />}
+                {/* Actions row: Call hospital / View camp + Mark read toggle */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginTop: 2, paddingTop: 8, borderTop: '1px solid #EDF2F7' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {n.title?.includes('Camp') ? (
+                      <button
+                        type="button"
+                        onClick={() => setTab('camps')}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: '#F3E8FF',
+                          border: '1px solid #D8B4FE',
+                          color: '#6D28D9',
+                          padding: '7px 12px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <GraduationCap size={14} />
+                        <span>View Camp Details</span>
+                      </button>
+                    ) : n.senderPhone ? (
+                      <a
+                        href={`tel:${n.senderPhone}`}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: '#D32F2F',
+                          color: '#FFFFFF',
+                          padding: '7px 12px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        <PhoneCall size={14} />
+                        <span>Call ({n.senderPhone})</span>
+                      </a>
+                    ) : null}
+                  </div>
 
                   {isUnread ? (
                     <button
@@ -961,7 +1080,219 @@ const DonorDashboard = () => {
     </div>
   );
 
-  const tabMap = { home: HomeTab, history: HistoryTab, profile: ProfileTab, alerts: AlertsTab };
+  /* ── DEDICATED CAMPS TAB (User Request) ─────────────────────────── */
+  const CampsTab = () => (
+    <div style={S.tabContent}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <div>
+          <h2 style={{ fontSize: 18, fontWeight: 900, color: '#172B4D', margin: 0 }}>
+            Nearby Blood Donation Camps
+          </h2>
+          <p style={{ fontSize: 12, color: '#64748B', margin: '3px 0 0' }}>
+            Active youth blood movements and scheduled college drives
+          </p>
+        </div>
+        <button
+          onClick={fetchNearbyCamps}
+          style={{
+            background: '#F1F5F9',
+            border: '1px solid #CBD5E1',
+            borderRadius: 8,
+            padding: '6px 12px',
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#334155',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4
+          }}
+        >
+          <RefreshCw size={12} />
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      {nearbyCamps.length === 0 ? (
+        <div style={S.emptyCard}>
+          <div style={S.emptyIconWrap}>
+            <GraduationCap size={26} color="#6C757D" />
+          </div>
+          <div style={S.emptyTitle}>No Camps Scheduled Currently</div>
+          <div style={S.emptySub}>
+            New youth blood drives posted by administration will appear here automatically.
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {nearbyCamps.map((camp) => {
+            const token = campRsvpSuccess[camp.campId];
+            const isRegistering = isRegisteringCampId === camp.campId;
+            const progressPct = Math.min(100, Math.round(((camp.registeredCount || 0) / (camp.targetUnits || 250)) * 100));
+
+            return (
+              <div
+                key={camp.campId || camp._id}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1.5px solid #E2E8F0',
+                  borderRadius: 16,
+                  padding: '18px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12,
+                }}
+              >
+                {/* Header row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                  <div>
+                    <span style={{
+                      background: '#F3E8FF',
+                      color: '#7C3AED',
+                      fontSize: 10.5,
+                      fontWeight: 800,
+                      letterSpacing: 0.6,
+                      textTransform: 'uppercase',
+                      padding: '3px 8px',
+                      borderRadius: 6,
+                      display: 'inline-block',
+                      marginBottom: 6,
+                    }}>
+                      UPCOMING YOUTH MOVEMENT
+                    </span>
+                    <h3 style={{ fontSize: 16, fontWeight: 900, color: '#172B4D', margin: 0 }}>
+                      {camp.title}
+                    </h3>
+                  </div>
+                  <span style={{
+                    background: '#ECFDF5',
+                    color: '#059669',
+                    fontSize: 11,
+                    fontWeight: 800,
+                    padding: '3px 8px',
+                    borderRadius: 6,
+                    flexShrink: 0
+                  }}>
+                    {camp.city || 'Active Drive'}
+                  </span>
+                </div>
+
+                {/* Info list */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 12.5, color: '#475569' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Calendar size={14} color="#7C3AED" style={{ flexShrink: 0 }} />
+                    <span><strong>Date:</strong> {camp.date}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Clock size={14} color="#7C3AED" style={{ flexShrink: 0 }} />
+                    <span><strong>Time:</strong> {camp.time}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                    <MapPin size={14} color="#DC2626" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span><strong>Venue:</strong> {camp.venue}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Building2 size={14} color="#0284C7" style={{ flexShrink: 0 }} />
+                    <span><strong>Clinical Partner:</strong> {camp.clinicalPartner || 'HIMS Blood Bank'}</span>
+                  </div>
+                </div>
+
+                {/* Target Progress Bar */}
+                <div style={{ background: '#F8FAFC', padding: '10px 12px', borderRadius: 10, border: '1px solid #E2E8F0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5, fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                    <span>Live Drive Progress</span>
+                    <span style={{ color: '#DC2626' }}>{camp.registeredCount || 0} / {camp.targetUnits || 250} Units Goal</span>
+                  </div>
+                  <div style={{ width: '100%', height: 6, background: '#E2E8F0', borderRadius: 999, overflow: 'hidden' }}>
+                    <div style={{ width: `${progressPct}%`, height: '100%', background: 'linear-gradient(90deg, #DC2626, #EF4444)', borderRadius: 999 }} />
+                  </div>
+                </div>
+
+                {camp.description && (
+                  <p style={{ fontSize: 12, color: '#64748B', margin: 0, lineHeight: 1.5 }}>
+                    {camp.description}
+                  </p>
+                )}
+
+                {/* RSVP / Action Buttons */}
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  {token ? (
+                    <div style={{
+                      flex: 1,
+                      background: '#ECFDF5',
+                      border: '1.5px solid #A7F3D0',
+                      borderRadius: 10,
+                      padding: '10px 14px',
+                      color: '#065F46',
+                      fontSize: 12,
+                      fontWeight: 800,
+                      textAlign: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6
+                    }}>
+                      <CheckCircle2 size={16} color="#059669" />
+                      <span>RSVP Confirmed! Token: {token}</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isRegistering}
+                      onClick={() => handleCampRSVP(camp)}
+                      style={{
+                        flex: 1,
+                        background: '#DC2626',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: 10,
+                        padding: '11px 16px',
+                        fontSize: 13,
+                        fontWeight: 800,
+                        cursor: isRegistering ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 8,
+                        boxShadow: '0 4px 12px rgba(220, 38, 38, 0.25)',
+                      }}
+                    >
+                      <Heart size={15} />
+                      <span>{isRegistering ? 'Registering Slot…' : 'Register for this Camp'}</span>
+                    </button>
+                  )}
+
+                  <Link
+                    to={`/camps/${camp.campId || "gech-hassan-2026"}`}
+                    style={{
+                      background: '#FFFFFF',
+                      border: '1.5px solid #CBD5E1',
+                      color: '#172B4D',
+                      borderRadius: 10,
+                      padding: '11px 14px',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    <span>Details</span>
+                    <ExternalLink size={13} />
+                  </Link>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
+  const tabMap = { home: HomeTab, camps: CampsTab, history: HistoryTab, profile: ProfileTab, alerts: AlertsTab };
   const ActiveTab = tabMap[tab] || HomeTab;
 
   /* ── RENDER ────────────────────────────────────────────────────── */
@@ -1424,3 +1755,4 @@ const DonorDashboard = () => {
 };
 
 export default DonorDashboard;
+

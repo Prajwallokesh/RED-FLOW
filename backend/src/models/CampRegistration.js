@@ -50,8 +50,18 @@ const CampRegistrationSchema = new mongoose.Schema({
   },
   affiliation: {
     type: String,
-    default: 'GECH Student / Faculty',
+    default: 'Voluntary Donor',
     trim: true,
+  },
+  donorId: {
+    type: String,
+    default: '',
+    index: true,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
   },
   status: {
     type: String,

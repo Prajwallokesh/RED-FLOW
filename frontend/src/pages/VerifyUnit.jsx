@@ -334,9 +334,10 @@ const VerifyUnit = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, fontSize: 11, color: 'rgba(255,255,255,0.75)', flexWrap: 'wrap', gap: 8, borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 8 }}>
                   <span>Donor ID: <strong style={{ color: '#FFFFFF', fontFamily: 'monospace' }}>{data.unit.donorId}</strong></span>
                   <span>Unit ID: <strong style={{ color: '#FFFFFF', fontFamily: 'monospace' }}>#{data.unit.unitId}</strong></span>
+                  <span>Certificate: <strong style={{ color: '#FDE047', fontFamily: 'monospace' }}>{data.unit.certificateNo || `RF-2026-${data.unit.unitId}`}</strong></span>
                 </div>
               </div>
 
